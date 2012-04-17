@@ -19,6 +19,7 @@ set vendorclass = option vendor-class-identifier;
 subnet <%= node_subnet %> netmask <%= node_netmask %> {
      option routers             <%= node_gateway %>;
      option domain-name-servers <%= node_dns %>;
+     option domain-name			"<%= domain_name %>"
      option subnet-mask         <%= node_netmask %>;
      filename                   "/pxelinux.0";
      default-lease-time         21600;

@@ -3,6 +3,7 @@ class cobbler(
 	$node_netmask,
 	$node_gateway,
 	$node_dns,
+	$domain_name,
 	$proxy = '',
 	$password_crypted = "x")
 {
