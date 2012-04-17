@@ -5,6 +5,7 @@ class cobbler(
 	$node_dns,
 	$domain_name,
 	$proxy = '',
+	$ucs_org = '',
 	$password_crypted = "x")
 {
 	package { cobbler:
@@ -35,6 +36,16 @@ class cobbler(
 		content => template('cobbler/dhcp.template.erb'),
 		require => File["/etc/cobbler"],
 		notify => Exec["restart-cobbler"],
+	}
+	
+	file { "/etc/cobbler/power/power_ucs.template":
+		if $ucs_org == "" {
+			content => template('cobbler/power_ucs.erb'),
+		}
+		else {
+			content => template('cobbler/power_ucs_domain.erb')
+		}
+		require => File["/etc/cobbler/power"],
 	}
 
 	exec { "restart-cobbler":
