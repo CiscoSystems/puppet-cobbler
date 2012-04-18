@@ -39,13 +39,7 @@ class cobbler(
 	}
 	
 	file { "/etc/cobbler/power/power_ucs.template":
-		if $ucs_org == "" {
-			content => template('cobbler/power_ucs.erb'),
-		}
-		else {
-			content => template('cobbler/power_ucs_domain.erb')
-		}
-		require => File["/etc/cobbler/power"],
+		content => template('cobbler/power_ucs_domain.erb'),
 	}
 
 	exec { "restart-cobbler":
