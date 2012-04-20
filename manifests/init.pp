@@ -21,6 +21,10 @@ class cobbler(
 		ensure => directory
 	}
 
+  file { "/etc/cobbler/power":
+    ensure => directory,
+  }
+  
 	file { "/etc/cobbler/settings":
 		content => template('cobbler/settings.erb'),
 		require => File["/etc/cobbler"],
@@ -39,8 +43,9 @@ class cobbler(
 	}
 	
 	file { "/etc/cobbler/power/power_ucs.template":
-		content => template('cobbler/power_ucs_domain.erb'),
-	}
+		content  => template('cobbler/power_ucs_domain.erb'),
+	  require => File["/etc/cobbler/power"],
+  }
 
 	exec { "restart-cobbler":
 		command => "/usr/sbin/service cobbler restart",

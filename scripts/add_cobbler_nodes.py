@@ -67,5 +67,6 @@ for system in system_macs:
 	server.modify_system(sys_id,"power_pass",power_pass,token)
 	server.modify_system(sys_id,"power_id",system,token)
 	server.save_system(sys_id,token)
-	server.sync(token)
+
+server.sync(token)
 
