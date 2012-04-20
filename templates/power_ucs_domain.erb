@@ -1,1 +1,1 @@
-fence_cisco_ucs <% if ucs_org %>-s "<%= ucs_org %>" <% end %> -a "\$power_address" -l "\$power_user" -p "\$power_pass" -n "\$power_id" -o "\$power_mode"
+fence_cisco_ucs <% if ucs_org %>-s "<%= ucs_org %>" <% end %> -a "$power_address" -l "$power_user" -p "$power_pass" -n "$power_id" -o "$power_mode"
