@@ -21,6 +21,7 @@ subnet <%= node_subnet %> netmask <%= node_netmask %> {
      option domain-name-servers <%= node_dns %>;
      option domain-name         "<%= domain_name %>";
      option subnet-mask         <%= node_netmask %>;
+     server-identifier          <%= ip %>;
      filename                   "/pxelinux.0";
      default-lease-time         21600;
      max-lease-time             43200;

@@ -4,6 +4,7 @@ class cobbler(
 	$node_gateway,
 	$node_dns,
 	$domain_name,
+	$ip,
 	$proxy = '',
 	$ucs_org = '',
 	$password_crypted = "x")
@@ -53,4 +54,13 @@ class cobbler(
 		refreshonly => true,
 		require => Package[cobbler],
 	}
+
+	exec { "cobbler-sync":
+		command => "/usr/bin/cobbler sync > /tmp/w.$$ 2>&1",
+        provider => shell,
+		refreshonly => true,
+		before => Exec[restart-cobbler],
+		require => Package[cobbler],
+	}
+
 }
