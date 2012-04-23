@@ -21,10 +21,6 @@ class cobbler(
 		ensure => directory
 	}
 
-	file { "/etc/cobbler/power":
-		ensure => directory,
-	}
-  
 	file { "/etc/cobbler/settings":
 		content => template('cobbler/settings.erb'),
 		require => File["/etc/cobbler"],
