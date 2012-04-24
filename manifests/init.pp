@@ -28,11 +28,6 @@ class cobbler(
 		notify => Exec["restart-cobbler"],
 	}
 
-	file { "/etc/cobbler/cisco-preseed":
-		content => template('cobbler/preseed.erb'),
-		require => File["/etc/cobbler"],
-	}
-
 	file { "/etc/cobbler/dhcp.template":
 		content => template('cobbler/dhcp.template.erb'),
 		require => File["/etc/cobbler"],
