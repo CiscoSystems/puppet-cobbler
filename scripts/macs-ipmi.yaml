@@ -1,0 +1,25 @@
+CYGNET-0:
+ ip: 192.168.101.254
+ mac: 70:CA:9B:CE:35:92
+ power_type: ipmi
+ power_ip: 192.168.28.10
+CYGNET-1:
+ ip: 192.168.101.11
+ mac: 70:CA:9B:CE:50:6E
+ power_type: ipmi
+ power_ip: 192.168.28.11
+CYGNET-2:
+ ip: 192.168.101.12
+ mac: CC:EF:48:B4:20:6C
+ power_type: ipmi
+ power_ip: 192.168.28.11
+CYGNET-4:
+ ip: 192.168.101.14
+ mac: D0:D0:FD:09:59:94
+ power_type: ipmi
+ power_ip: 192.168.28.14
+CYGNET-5:
+ ip: 192.168.101.15
+ mac: d0:d0:fd:09:56:a7
+ power_type: ipmi
+ power_ip: 192.168.28.15

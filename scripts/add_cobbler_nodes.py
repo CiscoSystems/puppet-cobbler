@@ -41,15 +41,15 @@ ip_dns_search = "sdu.lab"
 power_user = "admin"
 power_pass = "Node!12345"
 ucs_power_org = "NODE"
-power_type = "ucs"
-power_addr = "192.168.6.15"
+#power_type = "ucs"
+#power_addr = "192.168.6.15"
 
 
 system_macs = yaml.load(open("macs.yaml"))
 
 
 for system in system_macs:
-	dns_name = system.lower() + ".sdu.lab"
+	dns_name = system.lower() + "." + ip_dns_search
 	sys_id= server.new_system(token)
 	server.modify_system(sys_id,"name",dns_name,token)
 	server.modify_system(sys_id,"hostname",dns_name,token)
@@ -61,8 +61,12 @@ for system in system_macs:
 	server.modify_system(sys_id,"profile",cobbler_def_profile,token)
 	server.modify_system(sys_id,"kernel_options",cobbler_kopts,token)
 	server.modify_system(sys_id,"netboot_enabled",cobbler_netboot,token)
-	server.modify_system(sys_id,"power_type",power_type,token)
-	server.modify_system(sys_id,"power_address",power_addr,token)
+	if system_macs[system]["power_type"] == 'ipmi':
+		server.modify_system(sys_id,"power_type","ipmitool",token)
+		server.modify_system(sys_id,"power_address",system_macs[system]["power_ip"],token)
+	if system_macs[system]["power_type"] == 'ucs':
+		server.modify_system(sys_id,"power_type","ucs",token)
+		server.modify_system(sys_id,"power_address",system_macs[system]["power_ip"],token)
 	server.modify_system(sys_id,"power_user",power_user,token)
 	server.modify_system(sys_id,"power_pass",power_pass,token)
 	server.modify_system(sys_id,"power_id",system,token)
