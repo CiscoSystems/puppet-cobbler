@@ -28,6 +28,6 @@ d-i pkgsel/include string openssh-server puppet ntp
 d-i finish-install/reboot_in_progress note
 d-i preseed/late_command string sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
                                 sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
-								echo "server ntp.cisco.com" >> /target/etc/ntp.conf ; \
+								echo "server $http_server iburst" > /target/etc/ntp.conf ; \
                                 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name 
 
