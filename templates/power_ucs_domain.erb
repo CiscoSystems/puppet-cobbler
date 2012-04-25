@@ -1,1 +1,7 @@
-fence_cisco_ucs <% if ucs_org %>-s "<%= ucs_org %>" <% end %> -a "$power_address" -l "$power_user" -p "$power_pass" -n "$power_id" -o "$power_mode"
+#if $power_address and $power_address.count(':') > 0
+    #set (power_address, org) = $power_address.split(':', 1)
+    #set $org_arg = "-s %s" % $org
+#else
+    #set $org_arg = ""
+#end if
+fence_cisco_ucs $org_arg -a "$power_address" -l "$power_user" -p "$power_pass" -n "$power_id" -o "$power_mode"
