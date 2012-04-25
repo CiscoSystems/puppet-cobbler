@@ -2,20 +2,14 @@ d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string <%= proxy %>
-d-i     partman-auto/method string regular
-d-i     partman-lvm/device_remove_lvm boolean true
-d-i     partman-lvm/confirm boolean true
-d-i     partman/confirm_write_new_label boolean true
-d-i     partman-auto/choose_recipe select atomic
-d-i     partman/choose_partition        select Finish partitioning and write cha
-nges to disk
-d-i     partman/confirm boolean true
-d-i     partman/confirm_nooverwrite boolean true
-#d-i partman-auto/disk string /dev/sdc
-#d-i partman-auto/method string regular
-#d-i partman-auto/choose_recipe select atomic
-#d-i partman/choose_partition select Finish partitioning and write changes to disk
-#d-i partman/confirm boolean true
+d-i partman-auto/method string regular
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman/confirm_write_new_label boolean true
+d-i partman-auto/choose_recipe select atomic
+d-i partman/choose_partition        select Finish partitioning and write changes to disk
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
 d-i clock-setup/utc boolean true
 d-i time/zone string UTC
 d-i passwd/user-fullname string Admin Adminson
@@ -24,7 +18,6 @@ d-i passwd/user-password-crypted password <%= password_crypted %>
 d-i user-setup/encrypt-home boolean false
 d-i pkgsel/update-policy select none
 d-i pkgsel/include string openssh-server puppet ntp
-# openjdk-7-jre-headless
 d-i finish-install/reboot_in_progress note
 d-i preseed/late_command string sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
                                 sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
