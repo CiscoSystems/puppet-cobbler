@@ -35,7 +35,7 @@ token = server.login(cobbler_user,cobbler_pass)
 
 ip_def_gw = 1
 ip_addr_base_network = "192.168.100."
-ip_dns = "128.107.252.186"
+ip_dns = "192.168.26.186"
 ip_dns_search = "sdu.lab"
 
 power_user = "admin"
