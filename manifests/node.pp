@@ -9,7 +9,9 @@ define cobbler::node(
 	$power_user = "",
 	$power_password = "",
 	$power_id = "",
-	$root_disk = '/dev/sda')
+	$root_disk = '/dev/sda',
+	$add_hosts_entry = true,
+	$extra_host_aliases = [])
 {
 	exec { "cobbler-add-node-${name}":
 		command => "if cobbler system list | grep ${name};
@@ -27,4 +29,11 @@ define cobbler::node(
 		notify => Exec["cobbler-sync"],
 		before => Exec["restart-cobbler"]
 	}
+
+    if ( $add_hosts_entry ) {
+        host { "${name}.${domain}":
+            ip => "${ip}",
+            host_aliases => flatten(["${name}", $extra_host_aliases])
+        }
+    }
 }
