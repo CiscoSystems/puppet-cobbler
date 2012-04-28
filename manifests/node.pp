@@ -1,3 +1,40 @@
+# Definition: cobbler::node
+#
+# This class installs a node into the cobbler system.  Cobbler needs to be included
+# in a toplevel node definition for this to be useful.
+#
+# Parameters:
+# - $mac Mac address of the eth0 interface
+# - $profile Cobbler profile to assign
+# - $ip IP address to assign to eth0
+# - $domain Domain name to add to the resource name
+# - $preseed Cobbler/Ubuntu preseed/kickstart file for the node
+# - $power_address = "" Power management address for the node
+# - $power_type = "" 		Power management type (impitools, ucs, etc.)
+# - $power_user = ""    Power management username
+# - $power_password = ""  Power management password
+# - $power_id = ""     Power management port-id/name
+# - $root_disk = '/dev/sda'  Default Root disk name
+# - $add_hosts_entry = true, Create a cobbler local hosts entry (also useful for DNS)
+# - $extra_host_aliases = [] Any additional aliases to add to the host entry
+#
+# Example:
+# cobbler::node { "sdu-os-1":
+#  mac => "00:25:b5:00:00:08",
+#  profile => "precise-x86_64-auto",
+#  ip => "192.168.100.101",
+#  domain => "sdu.lab",
+#  preseed => "/etc/cobbler/cisco-preseed",
+#  power_address => "192.168.26.15:org-SDU",
+#  power_type => "ucs",
+#  power_user => "admin",
+#  power_password => "Sdu!12345",
+#  power_id => "SDU-OS-1",
+#  root_disk => "/dev/sdc",
+#  add_hosts_entry => true,
+#  extra_host_alises => ["nova", "keystone", "glance", "horizon"]
+# }
+#
 define cobbler::node(
 	$mac,
 	$profile,
