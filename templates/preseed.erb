@@ -19,9 +19,10 @@ d-i user-setup/encrypt-home boolean false
 d-i pkgsel/update-policy select none
 d-i pkgsel/include string <%= packages %>
 d-i finish-install/reboot_in_progress note
-<% if early_command != "" %>
-d-i preseed/early_command string <%= early_command %>
-<% end %>
-<% if late_command != "" %>
-d-i preseed/late_command string <%= late_command %>
-<% end %>
+d-i preseed/early_command string \
+wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name \
+&& <%= early_command %>
+d-i preseed/late_command string \
+<%= late_command %> \
+&& wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name \
+<% if stop_pxe %> && wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name <% end %>
