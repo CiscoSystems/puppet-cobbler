@@ -1,4 +1,5 @@
 define cobbler::ubuntu::preseed($packages = '',
+                                $early_command = '',
                                 $late_command = '',
                                 $proxy = '',
                                 $password_crypted = '') {

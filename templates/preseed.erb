@@ -19,6 +19,9 @@ d-i user-setup/encrypt-home boolean false
 d-i pkgsel/update-policy select none
 d-i pkgsel/include string <%= packages %>
 d-i finish-install/reboot_in_progress note
+<% if early_command != "" %>
+d-i preseed/early_command string <%= early_command %>
+<% end %>
 <% if late_command != "" %>
 d-i preseed/late_command string <%= late_command %>
 <% end %>
