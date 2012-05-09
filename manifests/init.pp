@@ -87,7 +87,7 @@ class cobbler(
 	}
 
 	exec { "cobbler-sync":
-		command => "/usr/bin/cobbler sync > /tmp/w.$$ 2>&1",
+		command => "/usr/bin/cobbler sync",
         provider => shell,
 		refreshonly => true,
 		before => Exec[restart-cobbler],
