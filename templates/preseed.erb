@@ -55,6 +55,6 @@ d-i preseed/early_command string \
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name \
 && <%= early_command %>
 d-i preseed/late_command string \
-&& wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name \
+wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name \
 <% if stop_pxe %> && wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name \<% end %>
 && <%= late_command %>
