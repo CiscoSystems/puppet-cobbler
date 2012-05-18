@@ -2,11 +2,43 @@ d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string <%= proxy %>
-d-i partman-auto/method string regular
 d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
 d-i partman/confirm_write_new_label boolean true
+d-i partman-auto/method string lvm
+<% if expert_disk %>
+d-i partman-auto/method string expert
+d-i partman-auto/expert_recipe string                         \
+      boot-root-swap-novo ::                                  \
+              200 1000 200 ext3                               \
+                      $primary{ } $bootable{ }                \
+                      device{ /dev/sdc }                      \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext3 }    \
+                      mountpoint{ /boot }                     \
+              .                                               \
+              10240 1000 65536 ext4                           \
+                      $primary{ }                             \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext4 }    \
+                      mountpoint{ / }                         \
+              .                                               \
+              4098 1000 200% linux-swap                       \
+                      $primary{ }                             \
+                      method{ swap } format{ }                \
+              .                                               \
+<% diskpart.each do |element| %> 1024 1024 1000000000 ext4                        \
+                      $defaultignore{ }                       \
+                      $primary{ }                             \
+                      method{ lvm }                           \
+                      device{ <%= element %> }          \
+                      vg_name{ nova-volumes }                 \
+                      .                                       \
+<% end %>
+<% else %>
+d-i partman-auto/method string regular
 d-i partman-auto/choose_recipe select atomic
+<% end %>
 d-i partman/choose_partition        select Finish partitioning and write changes to disk
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
@@ -23,6 +55,6 @@ d-i preseed/early_command string \
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name \
 && <%= early_command %>
 d-i preseed/late_command string \
-<%= late_command %> \
 && wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name \
-<% if stop_pxe %> && wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name <% end %>
+<% if stop_pxe %> && wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name \<% end %>
+&& <%= late_command %>
