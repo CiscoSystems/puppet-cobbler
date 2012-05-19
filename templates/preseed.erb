@@ -12,7 +12,7 @@ d-i partman-auto/expert_recipe string                         \
       boot-root-swap-novo ::                                  \
               200 1000 200 ext3                               \
                       $primary{ } $bootable{ }                \
-                      device{ /dev/sdc }                      \
+                      device{ <%= bootdisk %> }                      \
                       method{ format } format{ }              \
                       use_filesystem{ } filesystem{ ext3 }    \
                       mountpoint{ /boot }                     \
@@ -55,7 +55,7 @@ d-i preseed/early_command string \
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name \
 <% if early_command -%>
 && <%= early_command %>
-<% end -%>
+<% end %>
 d-i preseed/late_command string \
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name \
 <% if stop_pxe -%>
@@ -63,4 +63,4 @@ wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/syst
 <% end -%>
 <% if late_command -%>
 && <%= late_command %>
-<% end -%>
+<% end %>
