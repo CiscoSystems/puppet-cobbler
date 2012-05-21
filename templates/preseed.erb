@@ -12,7 +12,7 @@ d-i partman-auto/expert_recipe string                         \
       boot-root-swap-novo ::                                  \
               200 1000 200 ext3                               \
                       $primary{ } $bootable{ }                \
-                      device{ <%= bootdisk %> }                      \
+                      device{ <%= boot_disk %> }                      \
                       method{ format } format{ }              \
                       use_filesystem{ } filesystem{ ext3 }    \
                       mountpoint{ /boot }                     \
@@ -27,14 +27,22 @@ d-i partman-auto/expert_recipe string                         \
                       $primary{ }                             \
                       method{ swap } format{ }                \
               .                                               \
-<% diskpart.each do |element| %> 1024 1024 1000000000 ext4                        \
+<% diskpart.each do |element| %> 10240 20000 1000000000 ext4                        \
                       $defaultignore{ }                       \
                       $primary{ }                             \
                       method{ lvm }                           \
                       device{ <%= element %> }          \
                       vg_name{ nova-volumes }                 \
-                      .                                       \
+                      .                                       \					
 <% end %>
+			 5120 10000 100000000000 ext4                     \
+        	          $lvmok{ }                               \
+        			  method{ format } format{ }              \
+        			  use_filesystem{ } filesystem{ ext4 }    \
+        			  mountpoint{ /var/lib/libvirt }          \
+        			  in_vg{ nova-volumes }                   \
+        			  lv_name{ libvirt }                      \
+.
 <% else %>
 d-i partman-auto/method string regular
 d-i partman-auto/choose_recipe select atomic
