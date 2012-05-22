@@ -28,13 +28,13 @@ node /cobbler/ {
  }
  
  cobbler::ubuntu::preseed { "cisco-preseed":
-  packages => "openssh-server libvirt-bin ntp puppet kvm",
+  packages => "openssh-server lvm2 ntp puppet",
   late_command => "
-sed -e \"/logdir/ a pluginsync=true\" -i /target/etc/puppet/puppet.conf ; \
-sed -e \"s/START=no/START=yes/\" -i /target/etc/default/puppet ; \
-echo \"server \$http_server iburst\" > /target/etc/ntp.conf i ; \
-echo \"auto eth1\" >> /target/etc/network/interfaces ; \
-echo \"iface eth1 inet loopback\" >> /target/etc/network/interfaces ; \
+sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
+sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
+echo "server ${http_server} iburst" > /target/etc/ntp.conf i ; \
+echo "auto eth1" >> /target/etc/network/interfaces ; \
+echo "iface eth1 inet loopback" >> /target/etc/network/interfaces ; \
 ",
   proxy => "http://128.107.252.163:3142/",
   password_crypted => '$6$5NP1.NbW$WOXi0W1eXf9GOc0uThT5pBNZHqDH9JNczVjt9nzFsH7IkJdkUpLeuvBU.Zs9x3P6LBGKQh6b0zuR8XSlmcuGn.',
