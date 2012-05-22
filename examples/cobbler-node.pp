@@ -8,8 +8,10 @@
 # even the proxy address
 # If you are not using UCS blades, don't worry about the org-EXAMPLE, and if you are
 # and aren't using an organization domain, just leave the value as ""
-# An example MD5 crypted password is ubuntu: .DO/SOAPxKem.dRDx6UbyMd0HM6RQl1fxHYxPRuYFrRB04OcbO7c1
-# which is used by the cobbler preseed file to set up the default admin user.
+# You can create your own password rather than the one below (which is "ubuntu") by 
+# running the following at the command prompt: printf "r00tme" | mkpasswd -s -m md5
+# This password is used by the cobbler preseed file to set up the default admin user "localadmin".
+# More info is available here: https://help.ubuntu.com/12.04/installation-guide/i386/preseed-contents.html
 node /cobbler/ {
 
 # set up the cobbler instance on the "cobbler" node
@@ -27,6 +29,14 @@ node /cobbler/ {
  cobbler::ubuntu { "precise":	# Load via ubuntu-orchestra-import-isos "name"
  }
  
+# Late and early commands are tricky.
+#
+# If you use them, end each continued line with a \, separate commands with ;
+# The last command should not have any additional termination
+# If you want to use wget to acquire files for the preseed operations, you should likely
+# preceed the command with 'env -u http_proxy -u https_proxy ' as in:
+# in-target env -u http_proxy -u https_proxy wget -O /home/user/file http://${fileserver}:${fileserver_port}/${filename}
+
  cobbler::ubuntu::preseed { "cisco-preseed":
   packages => 'openssh-server lvm2 ntp puppet',
   late_command => '
@@ -34,7 +44,7 @@ sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
 sed -e "s/START=no/START=yes/" -i /target/etc/default/puppet ; \
 echo "server ${http_server} iburst" > /target/etc/ntp.conf i ; \
 echo "auto eth1" >> /target/etc/network/interfaces ; \
-echo "iface eth1 inet loopback" >> /target/etc/network/interfaces ; \
+echo "iface eth1 inet loopback" >> /target/etc/network/interfaces
 ',
   proxy => 'http://128.107.252.163:3142/',
   password_crypted => '$6$5NP1.NbW$WOXi0W1eXf9GOc0uThT5pBNZHqDH9JNczVjt9nzFsH7IkJdkUpLeuvBU.Zs9x3P6LBGKQh6b0zuR8XSlmcuGn.',
@@ -74,74 +84,3 @@ cobbler::node { "sdu-os-2":
  power_id => "SDU-OS-2",
  root_disk => "/dev/sdc",
  }
-
-cobbler::node { "sdu-os-3":
- mac => "00:25:b5:00:00:05",
- profile => "precise-x86_64-auto",
- ip => "192.168.100.103",
- domain => "sdu.lab",
- preseed => "/etc/cobbler/preseeds/cisco-preseed",
- power_address => "192.168.26.15:org-SDU",
- power_type => "ucs",
- power_user => "admin",
- power_password => "Sdu!12345",
- power_id => "SDU-OS-3",
- root_disk => "/dev/sdc",
- }
-
-cobbler::node { "sdu-os-4":
- mac => "00:25:b5:00:00:04",
- profile => "precise-x86_64-auto",
- ip => "192.168.100.104",
- domain => "sdu.lab",
- preseed => "/etc/cobbler/preseeds/cisco-preseed",
- power_address => "192.168.26.15:org-SDU",
- power_type => "ucs",
- power_user => "admin",
- power_password => "Sdu!12345",
- power_id => "SDU-OS-4",
- root_disk => "/dev/sdc",
- }
-
-cobbler::node { "sdu-os-5":
- mac => "00:25:b5:00:00:03",
- profile => "precise-x86_64-auto",
- ip => "192.168.100.105",
- domain => "sdu.lab",
- preseed => "/etc/cobbler/preseeds/cisco-preseed",
- power_address => "192.168.26.15:org-SDU",
- power_type => "ucs",
- power_user => "admin",
- power_password => "Sdu!12345",
- power_id => "SDU-OS-5",
- root_disk => "/dev/sdc",
- }
-
-#cobbler::node { "sdu-os-6":
-# mac => "00:25:b5:00:00:02",
-# profile => "precise-x86_64-auto",
-# ip => "192.168.100.106",
-# domain => "sdu.lab",
-# preseed => "/etc/cobbler/preseeds/cisco-preseed",
-# power_address => "192.168.26.15:org-SDU",
-# power_type => "ucs",
-# power_user => "admin",
-# power_password => "Sdu!12345",
-# power_id => "SDU-OS-6",
-# root_disk => "/dev/sdc",
-# }
-
-cobbler::node { "sdu-os-7":
- mac => "00:25:b5:00:00:01",
- profile => "precise-x86_64-auto",
- ip => "192.168.100.107",
- domain => "sdu.lab",
- preseed => "/etc/cobbler/preseeds/cisco-preseed",
- power_address => "192.168.26.15:org-SDU",
- power_type => "ucs",
- power_user => "admin",
- power_password => "Sdu!12345",
- power_id => "SDU-OS-7",
- root_disk => "/dev/sdc",
- }
-}
