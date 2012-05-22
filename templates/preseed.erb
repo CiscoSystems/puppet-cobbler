@@ -28,15 +28,15 @@ d-i partman-auto/expert_recipe string                         \
                       $primary{ }                             \
                       method{ swap } format{ }                \
               .                                               \
-<% diskpart.each do |element| %>             10240 20000 1000000000 ext4                        \
+<% diskpart.each do |element| %>             10240 20000 100000000 lvm                        \
                       $defaultignore{ }                       \
                       $primary{ }                             \
                       method{ lvm }                           \
-                      device{ <%= element %> }          \
+                      device{ <%= element %> }                \
                       vg_name{ nova-volumes }                 \
                       .                                       \					
 <% end %>
-              5120 10000 100000000000 ext4                     \
+              5120 10000 100000000 ext4                       \
                       $lvmok{ }                               \
                       method{ format } format{ }              \
                       use_filesystem{ } filesystem{ ext4 }    \
