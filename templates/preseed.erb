@@ -3,12 +3,12 @@ d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string <%= proxy %>
 d-i partman-auto/disk string <%= boot_disk %>
-d-i partman-auto/method string regular
 d-i partman-auto/choose_recipe select atomic
 d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
 d-i partman/confirm_write_new_label boolean true
 <% if expert_disk -%>
+d-i partman-auto/method string lvm
 d-i partman-auto/expert_recipe string                         \
       boot-root-swap-novo ::                                  \
 	              200 200 200 ext3                                 \
@@ -48,6 +48,8 @@ d-i partman-auto/expert_recipe string                         \
         in_vg{ nova-volumes }                   \
         lv_name{ libvirt }                      \
 .
+<% else -%>
+d-i partman-auto/method string regular
 <% end -%>
 d-i partman/choose_partition        select Finish partitioning and write changes to disk
 d-i partman/confirm boolean true
