@@ -3,7 +3,6 @@ define cobbler::ubuntu::preseed(
   $early_command = false, # runs before install
   $late_command = false, # runs after install, before PXE is disabled
   $proxy = '',
-  $stop_pxe = true, # true turns off further PXE boots; machine will boot from HD on next reboot
   $password_crypted = '',
   $expert_disk = false,
   $diskpart = [],
