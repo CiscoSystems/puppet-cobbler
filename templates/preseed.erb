@@ -4,29 +4,30 @@ d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string <%= proxy %>
 d-i partman-auto/disk string <%= boot_disk %>
 d-i partman-auto/choose_recipe select atomic
+d-i partman-md/device_remove_md boolean true
 d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
 d-i partman/confirm_write_new_label boolean true
 <% if expert_disk -%>
 d-i partman-auto/method string lvm
-d-i partman-auto/expert_recipe string                         \
-      boot-root-swap-novo ::                                  \
-	              200 200 200 ext3                                 \
-	                      $primary{ } $bootable{ }                \
-	                      device{ <%= boot_disk %> }                      \
-	                      method{ format } format{ }              \
-	                      use_filesystem{ } filesystem{ ext3 }    \
-	                      mountpoint{ /boot }                     \
-	              .                                               \
-<% diskpart.each do |element| -%>	              20480 1000000 1000000000 ext4                        \
-	                      $defaultignore{ }                       \
-	                      $primary{ }                             \
-	                      method{ lvm }                           \
-	                      device{ <%= element %> }                      \
-	                      vg_name{ nova-volumes }                 \
-	                      .                                       \
+d-i partman-auto/expert_recipe string           \
+boot-root-swap-novo ::                          \
+200 200 200 ext3                                \
+        $primary{ } $bootable{ }                \
+        device{ <%= boot_disk %> }                      \
+        method{ format } format{ }              \
+        use_filesystem{ } filesystem{ ext3 }    \
+        mountpoint{ /boot }                     \
+.                                               \
+<% diskpart.each do |element| -%>20480 1000000 1000000000 ext4                        \
+        $defaultignore{ }                       \
+        $primary{ }                             \
+        method{ lvm }                           \
+        device{ <%= element %> }                          \
+        vg_name{ nova-volumes }                 \
+.                                               \
 <% end -%>
-10240 10240 10240 ext4                            \
+10240 10240 10240 ext4                          \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
@@ -39,14 +40,20 @@ d-i partman-auto/expert_recipe string                         \
         method{ swap } format{ }                \
         in_vg{ nova-volumes }                   \
         lv_name{ swap }                         \
-.
-10240 10240 102400 ext4                           \
+.                                               \
+10240 10240 102400 ext4                         \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
         mountpoint{ /var/lib/libvirt }          \
         in_vg{ nova-volumes }                   \
         lv_name{ libvirt }                      \
+.                                               \
+10240 10240 102400 ext4                         \
+        $lvmok{ }                               \
+        mountpoint{ /tmp/hack }                 \
+        in_vg{ nova-volumes }                   \
+        lv_name{ hack }                         \
 .
 <% else -%>
 d-i partman-auto/method string regular
@@ -67,5 +74,6 @@ d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_por
 <% end %>
 d-i preseed/late_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name ;\
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name ;\
+<% if expert_disk -%>lvremove nova-volumes/hack -f ;\<% end -%>
 <% if late_command -%> <%= late_command %> <% end %>
 d-i finish-install/reboot_in_progress note
