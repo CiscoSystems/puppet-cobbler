@@ -14,7 +14,7 @@
 # - $power_user = ""    Power management username
 # - $power_password = ""  Power management password
 # - $power_id = ""     Power management port-id/name
-# - $root_disk = '/dev/sda'  Default Root disk name
+# - $boot_disk = '/dev/sda'  Default Root disk name
 # - $add_hosts_entry = true, Create a cobbler local hosts entry (also useful for DNS)
 # - $extra_host_aliases = [] Any additional aliases to add to the host entry
 #
@@ -30,7 +30,7 @@
 #  power_user => "admin",
 #  power_password => "Sdu!12345",
 #  power_id => "SDU-OS-1",
-#  root_disk => "/dev/sdc",
+#  boot_disk => "/dev/sdc",
 #  add_hosts_entry => true,
 #  extra_host_alises => ["nova", "keystone", "glance", "horizon"]
 # }
@@ -46,8 +46,9 @@ define cobbler::node(
 	$power_user = "",
 	$power_password = "",
 	$power_id = "",
-	$root_disk = '/dev/sda',
+	$boot_disk = '/dev/sda',
 	$add_hosts_entry = true,
+	$log_host = '',
 	$extra_host_aliases = [])
 {
 	exec { "cobbler-add-node-${name}":
@@ -59,7 +60,9 @@ define cobbler::node(
                         action=add;
                         extra_opts=--netboot-enabled=true;
                     fi;
-                    cobbler system \\\${action} --name='${name}' --mac-address='${mac}' --profile='${profile}' --ip-address=${ip} --dns-name='${name}.${domain}' --hostname='${name}.${domain}' --kickstart='${preseed}' --kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" partman-auto/disk=${root_disk} netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} netcfg/get_gateway=${cobbler::node_gateway} netcfg/confirm_static=true' --power-user=${power_user} --power-address=${power_address} --power-pass=${power_password} --power-id=${power_id} --power-type=${power_type} \\\${extra_opts}",
+		    extra_kargs='';
+		    if [ ! -z \"${log_host}\" ] ; then extra_kargs='log_host=${log_host} BOOT_DEBUG=2' ; fi ;
+                    cobbler system \\\${action} --name='${name}' --mac-address='${mac}' --profile='${profile}' --ip-address=${ip} --dns-name='${name}.${domain}' --hostname='${name}.${domain}' --kickstart='${preseed}' --kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} netcfg/get_gateway=${cobbler::node_gateway} netcfg/confirm_static=true '\"\\\${extra_kargs}\" --power-user=${power_user} --power-address=${power_address} --power-pass=${power_password} --power-id=${power_id} --power-type=${power_type} \\\${extra_opts}",
 		provider => shell,
 		path => "/usr/bin:/bin",
 		require => Package[cobbler],
