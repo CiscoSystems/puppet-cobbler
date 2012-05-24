@@ -5,8 +5,7 @@ define cobbler::ubuntu::preseed(
   $proxy = '',
   $password_crypted = '',
   $expert_disk = false,
-  $diskpart = [],
-  $boot_disk = '/dev/sdc') {
+  $diskpart = []) {
 
     if ( ! defined(File['/etc/cobbler/preseeds'])) {
         file { "/etc/cobbler/preseeds":
