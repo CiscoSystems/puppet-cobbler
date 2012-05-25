@@ -73,6 +73,6 @@ d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_por
 <% end %>
 d-i preseed/late_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name ;\
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name ;\
-<% if expert_disk -%>lvremove nova-volumes/hack -f ;\<% end -%>
-<% if late_command -%> <%= late_command %> <% end %>
+<% if expert_disk -%>/sbin/lvremove -f nova-volumes/hack;\<% end -%>
+<% if late_command -%><%= late_command -%> <% end -%>
 d-i finish-install/reboot_in_progress note
