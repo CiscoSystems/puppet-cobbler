@@ -2,14 +2,13 @@ d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string <%= proxy %>
-d-i partman-auto/disk string <%= boot_disk %>
+d-i partman-auto/choose_recipe select atomic
+d-i partman-md/device_remove_md boolean true
 d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
-d-i partman-lvm/confirm_nochanges boolean false
 d-i partman/confirm_write_new_label boolean true
 <% if expert_disk -%>
 d-i partman-auto/method string lvm
-d-i partman-auto/choose_recipe select boot-root-swap-nova
 d-i partman-auto/expert_recipe string           \
 boot-root-swap-novo ::                          \
 200 200 200 ext3                                \
@@ -57,7 +56,6 @@ boot-root-swap-novo ::                          \
 .
 <% else -%>
 d-i partman-auto/method string regular
-d-i partman-auto/choose_recipe select atomic
 <% end -%>
 d-i partman/choose_partition        select Finish partitioning and write changes to disk
 d-i partman/confirm boolean true
@@ -75,6 +73,6 @@ d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_por
 <% end %>
 d-i preseed/late_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name ;\
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name ;\
-<% if expert_disk -%>/sbin/lvremove -f nova-volumes/hack;\<% end %>
-<% if late_command -%><%= late_command -%><% end -%>
+<% if expert_disk -%>/sbin/lvremove -f nova-volumes/hack;\<% end -%>
+<% if late_command -%><%= late_command -%> <% end -%>
 d-i finish-install/reboot_in_progress note
