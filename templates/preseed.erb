@@ -72,7 +72,7 @@ d-i pkgsel/include string <%= packages %>
 d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name <% if early_command -%> ;\
 <%= early_command %>
 <% end %>
-d-i preseed/late_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name ;\
+d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 || true; wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name ;\
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name ;\
 <% if expert_disk -%>/sbin/lvremove -f nova-volumes/hack;\<% end -%>
 <% if late_command -%><%= late_command -%> <% end -%>
