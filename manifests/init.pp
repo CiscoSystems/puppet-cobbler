@@ -11,6 +11,10 @@
 # - $node_dns				The DNS server IP address (currently cobbler doesn't manage DNS)
 # - $domain_name		The domain name relative to the new nodes being deployed
 # - $ip							The IP address that the cobbler server will use as the "next hop"
+# - $dhcp_ip_low		The low range of default DHCP address
+# - $dhcp_ip_high		The high range of default DHCP addresses
+# - $dns_service		Manage DNS? defaults to no. optiosn: manage_dnsmasq, manage_bind
+# - $dhcp_service		Manage DHCP? defaults to no. options: manage_dnsmasq, manage_isc
 # - $proxy = ''			If a proxy is required to get to the internet for updates, define it
 # - $password_crypted = "x"  - The default 'localadmin' user password, MD5 encrypted. 
 # 
@@ -41,15 +45,33 @@ class cobbler(
 	$node_dns,
 	$domain_name,
 	$ip,
+	$dhcp_ip_low,
+	$dhcp_ip_high,
 	$proxy = '',
 	$ucs_org = '',
+	$manage_dns = undef,
+	$manage_dhcp = undef,
+	$dns_service = undef,
+	$dhcp_service = undef,
 	$password_crypted = "x")
 {
+
 	package { cobbler:
 		ensure => present }
 
-	package { "isc-dhcp-server":	
+      if $dns_service == $dhcp_service {
+          package { $dns_service:	
 		ensure => present }
+      } else {
+        if $dns_service != undef {
+	   package { $dns_service:
+              ensure => present }
+        }
+        if $dhcp_service != undef {
+            package { $dhcp_service:
+              ensure => present }
+        }
+      }
 
 	package { "tftpd-hpa":
 		ensure => present }
@@ -64,8 +86,20 @@ class cobbler(
 		notify => Exec["restart-cobbler"],
 	}
 
+	file { "/etc/cobbler/modules.conf":
+		content => template('cobbler/modules.conf.erb'),
+		require => File["/etc/cobbler"],
+		notify => Exec["restart-cobbler"],
+	}
+
 	file { "/etc/cobbler/dhcp.template":
 		content => template('cobbler/dhcp.template.erb'),
+		require => File["/etc/cobbler"],
+		notify => Exec["restart-cobbler"],
+	}
+	
+	file { "/etc/cobbler/dnsmasq.template":
+		content => template('cobbler/dnsmasq.template.erb'),
 		require => File["/etc/cobbler"],
 		notify => Exec["restart-cobbler"],
 	}
