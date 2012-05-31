@@ -49,8 +49,6 @@ class cobbler(
 	$dhcp_ip_high,
 	$proxy = '',
 	$ucs_org = '',
-	$manage_dns = undef,
-	$manage_dhcp = undef,
 	$dns_service = undef,
 	$dhcp_service = undef,
 	$password_crypted = "x")
