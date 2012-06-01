@@ -15,6 +15,7 @@
 # - $dhcp_ip_high		The high range of default DHCP addresses
 # - $dns_service		Manage DNS? defaults to no. optiosn: manage_dnsmasq, manage_bind
 # - $dhcp_service		Manage DHCP? defaults to no. options: manage_dnsmasq, manage_isc
+# - $ntp_server                 NTP server if the default (ntp.ubuntu.com) isn't reachable
 # - $proxy = ''			If a proxy is required to get to the internet for updates, define it
 # - $password_crypted = "x"  - The default 'localadmin' user password, MD5 encrypted. 
 # 
@@ -51,6 +52,7 @@ class cobbler(
 	$ucs_org = '',
 	$dns_service = undef,
 	$dhcp_service = undef,
+        $ntp_server = undef,
 	$password_crypted = "x")
 {
 
