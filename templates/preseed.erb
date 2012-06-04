@@ -2,7 +2,6 @@ d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string <%= proxy %>
-d-i partman-auto/disk string <%= boot_disk %>
 d-i partman/alignment string cylinder
 d-i partman-md/device_remove_md boolean true
 d-i partman-md/confirm boolean true
