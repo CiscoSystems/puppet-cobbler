@@ -194,11 +194,11 @@ remove_old_puppet_certs_automatically: 1
 
 # set to 1 to enable Cobbler's DHCP management features.
 # the choice of DHCP management engine is in /etc/cobbler/modules.conf
-manage_dhcp: <% if dhcp_service -%>1<% else -%>0<% end -%>
+manage_dhcp: <% if @dhcp_service %>1<% else %>0<% end %>
 
 # set to 1 to enable Cobbler's DNS management features.
 # the choice of DNS mangement engine is in /etc/cobbler/modules.conf
-manage_dns: <% if dns_service -%>1<% else -%>0<% end -%>
+manage_dns: <% if @dns_service %>1<% else %>0<% end %>
 
 # set to 1 to enable Cobbler's TFTP management features.
 # the choice of TFTP mangement engine is in /etc/cobbler/modules.conf
