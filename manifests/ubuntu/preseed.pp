@@ -1,3 +1,8 @@
+# --Cobbler preseed file define for Ubuntu
+#
+#
+# - $no_default_route Do not install a default route when bringing up the network
+#
 define cobbler::ubuntu::preseed(
   $packages = '',
   $early_command = false, # runs before install
@@ -6,6 +11,7 @@ define cobbler::ubuntu::preseed(
   $ntp_server = undef,
   $password_crypted = '',
   $expert_disk = false,
+  $no_default_route = false,
   $diskpart = [],
   $boot_disk = undef) {
 

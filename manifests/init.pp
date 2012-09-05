@@ -6,11 +6,12 @@
 # 
 # == Local Parameters:
 # - $node_subnet		The subnet for the PXE server, only one subnet is supported
-# - $node_netmask 	The netmask for the subnet
+# - $node_netmask 		The netmask for the subnet
 # - $node_gateway		The default gateway for the subnet
-# - $node_dns				The DNS server IP address (currently cobbler doesn't manage DNS)
+# - $node_dns			The DNS server IP address (currently cobbler doesn't manage DNS)
 # - $domain_name		The domain name relative to the new nodes being deployed
-# - $ip							The IP address that the cobbler server will use as the "next hop"
+# - $ip					The IP address that the cobbler server will use as the "next hop"
+# - $no_default_route	Do not install a default route when bringing up the network
 # - $dhcp_ip_low		The low range of default DHCP address
 # - $dhcp_ip_high		The high range of default DHCP addresses
 # - $dns_service		Manage DNS? defaults to no. options: dnsmasq, isc
@@ -46,6 +47,7 @@ class cobbler(
 	$node_dns,
 	$domain_name,
 	$ip,
+	$no_default_route = undef,
 	$dhcp_ip_low = undef,
 	$dhcp_ip_high = undef,
 	$proxy = '',
