@@ -49,9 +49,9 @@ openstack ::                          \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
-        mountpoint{ /var/lib/libvirt }          \
+        mountpoint{ /var/lib/nova }          \
         in_vg{ nova-volumes }                   \
-        lv_name{ libvirt }                      \
+        lv_name{ nova }                      \
 .                                               \
 10240 10240 102400 ext4                         \
         $lvmok{ }                               \
