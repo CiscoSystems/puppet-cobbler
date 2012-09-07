@@ -9,6 +9,7 @@ define cobbler::ubuntu::preseed(
   $late_command = false, # runs after install, before PXE is disabled
   $proxy = '',
   $ntp_server = undef,
+  $admin_user = 'localadmin',
   $password_crypted = '',
   $expert_disk = false,
   $no_default_route = false,

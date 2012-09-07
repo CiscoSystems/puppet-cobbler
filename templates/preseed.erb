@@ -77,7 +77,7 @@ d-i clock-setup/utc boolean true
 d-i clock-setup/ntp-server string <%= ntp_server %><% end %>
 d-i time/zone string UTC
 d-i passwd/user-fullname string Admin Adminson
-d-i passwd/username string localadmin
+d-i passwd/username string <%= admin_user %>
 d-i passwd/user-password-crypted password <%= password_crypted %>
 d-i user-setup/encrypt-home boolean false
 d-i grub-installer/only_debian boolean true
