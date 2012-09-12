@@ -1,7 +1,6 @@
 # --Cobbler preseed file define for Ubuntu
 #
 #
-# - $no_default_route Do not install a default route when bringing up the network
 #
 define cobbler::ubuntu::preseed(
   $packages = '',
@@ -12,7 +11,6 @@ define cobbler::ubuntu::preseed(
   $admin_user = 'localadmin',
   $password_crypted = '',
   $expert_disk = false,
-  $no_default_route = false,
   $diskpart = [],
   $boot_disk = undef) {
 

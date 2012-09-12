@@ -43,7 +43,7 @@
 class cobbler(
 	$node_subnet,
 	$node_netmask,
-	$node_gateway,
+	$node_gateway = false,
 	$node_dns,
 	$domain_name,
 	$ip,

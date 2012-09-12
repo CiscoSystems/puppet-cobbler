@@ -15,6 +15,7 @@
 # - $power_password = ""  Power management password
 # - $power_id = ""     Power management port-id/name
 # - $boot_disk = '/dev/sda'  Default Root disk name
+# - $serial = False (true for serial console)
 # - $add_hosts_entry = true, Create a cobbler local hosts entry (also useful for DNS)
 # - $extra_host_aliases = [] Any additional aliases to add to the host entry
 #
@@ -49,8 +50,30 @@ define cobbler::node(
 	$boot_disk = '/dev/sda',
 	$add_hosts_entry = true,
 	$log_host = '',
+	$serial = false,
 	$extra_host_aliases = [])
 {
+	if($cobbler::node_gateway) {
+	    $gateway_opt = "netcfg/get_gateway=${cobbler::node_gateway}"
+	} else {
+	    # There is a bug in Ubuntu's netcfg (as of 2012-09) that
+	    # prevents no-gateway setups working.  This is a workaround
+	    # - we remove the gateway in post-install.
+	    # (no_default_route is conveniently spare)
+	    $gateway_opt = "netcfg/get_gateway=${cobbler::ip} netcfg/no_default_route=true"
+	}
+        if($log_host) {
+            $log_opt = "log_host=${log_host} BOOT_DEBUG=2"
+        } else {
+            $log_opt = ""
+        }
+        if($serial) {
+            $serial_opt = "console=ttyS0,9600"
+        } else {
+            $serial_opt = ""
+        }
+	$net_settings="priority=critical netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} ${gateway_opt} netcfg/confirm_static=true"
+                    #cobbler system \\\${action} --name='${name}' --mac-address='${mac}' --profile='${profile}' --ip-address=${ip} --dns-name='${name}.${domain}' --hostname='${name}.${domain}' --kickstart='${preseed}' --kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} ${gateway_opt} netcfg/confirm_static=true partman-auto/disk=${boot_disk} ${log_opt}' --power-user=${power_user} --power-address=${power_address} --power-pass=${power_password} --power-id=${power_id} --power-type=${power_type} \\\${extra_opts}",
 	exec { "cobbler-add-node-${name}":
 		command => "if cobbler system list | grep ${name};
                     then
@@ -60,9 +83,7 @@ define cobbler::node(
                         action=add;
                         extra_opts=--netboot-enabled=true;
                     fi;
-		    extra_kargs='';
-		    if [ ! -z \"${log_host}\" ] ; then extra_kargs='log_host=${log_host} BOOT_DEBUG=2' ; fi ;
-                    cobbler system \\\${action} --name='${name}' --mac-address='${mac}' --profile='${profile}' --ip-address=${ip} --dns-name='${name}.${domain}' --hostname='${name}.${domain}' --kickstart='${preseed}' --kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} netcfg/get_gateway=${cobbler::node_gateway} netcfg/confirm_static=true partman-auto/disk=${boot_disk} '\"\\\${extra_kargs}\" --power-user=${power_user} --power-address=${power_address} --power-pass=${power_password} --power-id=${power_id} --power-type=${power_type} \\\${extra_opts}",
+                    cobbler system \\\${action} --name='${name}' --mac-address='${mac}' --profile='${profile}' --ip-address=${ip} --dns-name='${name}.${domain}' --hostname='${name}.${domain}' --kickstart='${preseed}' --kopts='$net_settings partman-auto/disk=${boot_disk} ${log_opt} ${serial_opt}' --power-user=${power_user} --power-address=${power_address} --power-pass=${power_password} --power-id=${power_id} --power-type=${power_type} \\\${extra_opts}",
 		provider => shell,
 		path => "/usr/bin:/bin",
 		require => Package[cobbler],
