@@ -9,7 +9,11 @@ read-ethers
 addn-hosts = /var/lib/cobbler/cobbler_hosts
 domain=<%= domain_name %>
 
+<%- if dhcp_ip_low %>
 dhcp-range=<%= dhcp_ip_low %>,<%= dhcp_ip_high %>
+<%- else %>
+dhcp-range=<%= node_subnet %>,static,<%= node_netmask %>
+<%- end %>
 dhcp-option=3,$next_server
 dhcp-lease-max=1000
 dhcp-authoritative
