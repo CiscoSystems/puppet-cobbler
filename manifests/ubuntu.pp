@@ -14,9 +14,15 @@
 #
 # cobbler::ubuntu { "precise": }
 #
-define cobbler::ubuntu($arch = "x86_64") { 
+define cobbler::ubuntu($arch = "x86_64", $proxy = False) {
+    if($proxy)  {
+         $proxy_pfx="env http_server=${proxy} https_server=${proxy} "
+    } else {
+         $proxy_pfx=""
+    }
     exec { "cobbler-import-$name":
-        command => "if cobbler profile list | grep ${name}-${arch}; then cobbler-ubuntu-import -u ${name}-${arch}; else cobbler-ubuntu-import ${name}-${arch}; fi",
+        command => "${proxy_pfx} cobbler-ubuntu-import ${name}-${arch}",
+	unless => "cobbler profile list | grep ${name}-${arch}",
         provider => shell,
         path => "/usr/bin:/bin",
         require => Package[cobbler],
