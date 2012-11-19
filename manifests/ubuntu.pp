@@ -14,7 +14,7 @@
 #
 # cobbler::ubuntu { "precise": }
 #
-define cobbler::ubuntu($arch = "x86_64", $proxy = False) {
+define cobbler::ubuntu($arch = "x86_64", $proxy = false) {
     if($proxy)  {
          $proxy_pfx="env http_server=${proxy} https_server=${proxy} "
     } else {
