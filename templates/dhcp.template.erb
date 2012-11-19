@@ -17,7 +17,9 @@ ignore client-updates;
 set vendorclass = option vendor-class-identifier;
 
 subnet <%= node_subnet %> netmask <%= node_netmask %> {
+     <%-if node_gateway %>
      option routers             <%= node_gateway %>;
+     <%-end %>
      option domain-name-servers <%= node_dns %>;
      option domain-name         "<%= domain_name %>";
      option subnet-mask         <%= node_netmask %>;

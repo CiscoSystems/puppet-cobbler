@@ -14,7 +14,11 @@ dhcp-range=<%= dhcp_ip_low %>,<%= dhcp_ip_high %>
 <%- else %>
 dhcp-range=<%= node_subnet %>,static,<%= node_netmask %>
 <%- end %>
-dhcp-option=3,$next_server
+<%-if node_gateway %>
+dhcp-option=3,<%= node_gateway %>
+<%-else %>
+dhcp-option=3
+<%-end %>
 dhcp-lease-max=1000
 dhcp-authoritative
 dhcp-boot=pxelinux.0
