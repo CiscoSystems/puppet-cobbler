@@ -52,7 +52,7 @@ define cobbler::node(
 	$extra_host_aliases = [])
 {
 
-	$preseed_file="/etc/cobbler/presseeds/$preseed"
+	$preseed_file="/etc/cobbler/preseeds/$preseed"
 	exec { "cobbler-add-node-${name}":
 		command => "if cobbler system list | grep ${name};
                     then
