@@ -56,6 +56,16 @@ define cobbler::node(
 
 	$preseed_file="/etc/cobbler/preseeds/$preseed"
 
+        if($cobbler::node_gateway) {
+            $gateway_opt = "netcfg/get_gateway=${cobbler::node_gateway}"
+        } else {
+            # There is a bug in Ubuntu's netcfg (as of 2012-09) that
+            # prevents no-gateway setups working.  This is a workaround
+            # - we remove the gateway in post-install.
+            # (no_default_route is conveniently spare)
+            $gateway_opt = "netcfg/get_gateway=${cobbler::ip} netcfg/no_default_route=true"
+        }
+
         if($serial) {
             $serial_opt = "console=ttyS0,9600"
         } else {
@@ -80,7 +90,7 @@ define cobbler::node(
 				--dns-name='${name}.${domain}' \
 				--hostname='${name}.${domain}' \
 				--kickstart='${preseed_file}' \
-				--kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} netcfg/get_gateway=${cobbler::node_gateway} netcfg/confirm_static=true partman-auto/disk=${boot_disk} ${serial_opt} '\"\\\${extra_kargs}\" \
+				--kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} ${gateway_opt} netcfg/confirm_static=true partman-auto/disk=${boot_disk} ${serial_opt} '\"\\\${extra_kargs}\" \
 				--power-user=${power_user} \
 				--power-address=${power_address} \
 				--power-pass=${power_password} \
