@@ -66,6 +66,12 @@ define cobbler::node(
             $gateway_opt = "netcfg/get_gateway=${cobbler::ip} netcfg/no_default_route=true"
         }
 
+        if($log_host) {
+            $log_opt = "log_host=${log_host} BOOT_DEBUG=2"
+        } else {
+            $log_opt = ""
+        }
+
         if($serial) {
             $serial_opt = "console=ttyS0,9600"
         } else {
@@ -80,8 +86,6 @@ define cobbler::node(
                     else
                         action='add --netboot-enabled=true'
                     fi;
-		    extra_kargs='';
-		    if [ ! -z \"${log_host}\" ] ; then extra_kargs='log_host=${log_host} BOOT_DEBUG=2' ; fi ;
  		    cobbler system \\\${action} \
 				--name='${name}' \
 				--mac-address='${mac}' \
@@ -90,7 +94,7 @@ define cobbler::node(
 				--dns-name='${name}.${domain}' \
 				--hostname='${name}.${domain}' \
 				--kickstart='${preseed_file}' \
-				--kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} ${gateway_opt} netcfg/confirm_static=true partman-auto/disk=${boot_disk} ${serial_opt} '\"\\\${extra_kargs}\" \
+				--kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} ${gateway_opt} netcfg/confirm_static=true partman-auto/disk=${boot_disk} ${serial_opt} ${log_opt}' \
 				--power-user=${power_user} \
 				--power-address=${power_address} \
 				--power-pass=${power_password} \
