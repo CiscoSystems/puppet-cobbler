@@ -15,6 +15,7 @@
 # - $power_password = ""  Power management password
 # - $power_id = ""     Power management port-id/name
 # - $boot_disk = '/dev/sda'  Default Root disk name
+# - $serial = False (true for serial console)
 # - $add_hosts_entry = true, Create a cobbler local hosts entry (also useful for DNS)
 # - $extra_host_aliases = [] Any additional aliases to add to the host entry
 #
@@ -54,7 +55,15 @@ define cobbler::node(
 {
 
 	$preseed_file="/etc/cobbler/preseeds/$preseed"
+
+        if($serial) {
+            $serial_opt = "console=ttyS0,9600"
+        } else {
+            $serial_opt = ""
+        }
+
 	exec { "cobbler-add-node-${name}":
+
 		command => "if cobbler system list | grep ${name};
                     then
                         action=edit;
@@ -65,10 +74,10 @@ define cobbler::node(
                     fi;
 		    extra_kargs='';
 		    if [ ! -z \"${log_host}\" ] ; then extra_kargs='log_host=${log_host} BOOT_DEBUG=2' ; fi ;
- 		    cobbler system \\\${action} --name='${name}' --mac-address='${mac}' --profile='${profile}' --ip-address=${ip} --dns-name='${name}.${domain}' --hostname='${name}.${domain}' --kickstart='${preseed_file}' --kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} netcfg/get_gateway=${cobbler::node_gateway} netcfg/confirm_static=true partman-auto/disk=${boot_disk} '\"\\\${extra_kargs}\" --power-user=${power_user} --power-address=${power_address} --power-pass=${power_password} --power-id=${power_id} --power-type=${power_type} \\\${extra_opts}",
+ 		    cobbler system \\\${action} --name='${name}' --mac-address='${mac}' --profile='${profile}' --ip-address=${ip} --dns-name='${name}.${domain}' --hostname='${name}.${domain}' --kickstart='${preseed_file}' --kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} netcfg/get_gateway=${cobbler::node_gateway} netcfg/confirm_static=true partman-auto/disk=${boot_disk} ${serial_opt} '\"\\\${extra_kargs}\" --power-user=${power_user} --power-address=${power_address} --power-pass=${power_password} --power-id=${power_id} --power-type=${power_type} \\\${extra_opts}",
 		provider => shell,
 		path => "/usr/bin:/bin",
-		require => [Package[cobbler],Cobbler::Ubuntu::Preseed[$preseed],Anchor["cobbler-profile-${profile}"]],
+                require => [Package[cobbler],Cobbler::Ubuntu::Preseed[$preseed],Anchor["cobbler-profile-${profile}"]],
 		notify => Exec["cobbler-sync"],
 	}
 
