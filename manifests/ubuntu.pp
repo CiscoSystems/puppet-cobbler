@@ -20,12 +20,17 @@ define cobbler::ubuntu($arch = "x86_64", $proxy = false) {
     } else {
          $proxy_pfx=""
     }
-    exec { "cobbler-import-$name":
+    exec { "cobbler-import-$name-$arch":
         command => "${proxy_pfx} cobbler-ubuntu-import ${name}-${arch}",
 	unless => "cobbler profile list | grep ${name}-${arch}",
         provider => shell,
         path => "/usr/bin:/bin",
         require => Package[cobbler],
-        before => Exec["restart-cobbler"]
+    } 
+    anchor{ "cobbler-profile-${name}-${arch}": 
+	require => Exec["cobbler-import-$name-$arch"],
+    }
+    anchor { "cobbler-profile-${name}-${arch}-auto": 
+	require => Exec["cobbler-import-$name-$arch"],
     }
 }
