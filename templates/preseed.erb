@@ -12,21 +12,35 @@ d-i partman/choose_partition select Finish
 d-i partman/confirm_write_new_label boolean true
 <% if expert_disk -%>
 d-i partman-auto/method string lvm
+d-i partman-basicfilesystems/choose_label string gpt
+d-i partman-basicfilesystems/default_label string gpt
+d-i partman-partitioning/choose_label string gpt
+d-i partman-partitioning/default_label string gpt
+d-i partman/choose_label string gpt
+d-i partman/default_label string gpt
 d-i partman-auto/choose_recipe select openstack 
 d-i partman-auto/expert_recipe string           \
-openstack ::                          \
+openstack ::                                    \
+1 1 1 free                                      \
+        $gptonly{ }                             \
+        $primary{ }                             \
+        $bios_boot{ }                           \
+        method{ biosgrub }                      \
+.                                               \
 200 200 200 ext3                                \
-        $primary{ } $bootable{ }                \
-        device{ <%= boot_disk %> }                      \
+        $gptonly{ }                             \
+        $primary{ }                             \
+        device{ <%= boot_disk %> }              \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext3 }    \
         mountpoint{ /boot }                     \
 .                                               \
 <% diskpart.each do |element| -%>20480 1000000 1000000000 ext4                        \
         $defaultignore{ }                       \
+        $gptonly{ }                             \
         $primary{ }                             \
         method{ lvm }                           \
-        device{ <%= element %> }                          \
+        device{ <%= element %> }                \
         vg_name{ nova-volumes }                 \
 .                                               \
 <% end -%>
@@ -48,9 +62,9 @@ openstack ::                          \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
-        mountpoint{ /var/lib/libvirt }          \
+        mountpoint{ /var }                      \
         in_vg{ nova-volumes }                   \
-        lv_name{ libvirt }                      \
+        lv_name{ var }                          \
 .                                               \
 10240 10240 102400 ext4                         \
         $lvmok{ }                               \

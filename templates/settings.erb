@@ -210,8 +210,8 @@ manage_rsync: 0
 # if using BIND (named) for DNS management in /etc/cobbler/modules.conf
 # and manage_dns is enabled (above), this lists which zones are managed
 # See the Wiki (https://fedorahosted.org/cobbler/wiki/ManageDns) for more info
-manage_forward_zones: []
-manage_reverse_zones: []
+manage_forward_zones: [<% if @dns_package == 'bind9' -%><%= @domain_name -%><% end -%>] 
+manage_reverse_zones: [<% if @dns_package == 'bind9' -%><%= @node_subnet -%><% end -%>]
 
 # if using cobbler with manage_dhcp, put the IP address
 # of the cobbler server here so that PXE booting guests can find it
