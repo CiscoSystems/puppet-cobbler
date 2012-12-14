@@ -16,7 +16,6 @@
 # - $dns_service		Manage DNS? defaults to no. options: dnsmasq, isc
 # - $dhcp_service		Manage DHCP? defaults to no. options: dnsmasq, isc
 # - $ntp_server			NTP server if the default (ntp.ubuntu.com) isn't reachable
-# - $proxy = ''			If a proxy is required to get to the internet for updates, define it
 # - $password_crypted = "x"  - The default 'localadmin' user password, MD5 encrypted. 
 # 
 # == Requires:
@@ -35,7 +34,6 @@
 #			node_dns => "192.168.1.1",
 #			ip => '192.168.1.254',
 #			domain_name => "example.com",
-#			proxy => "http://192.168.1.1:3142/",
 #			password_crypted => '$6$UfgWxrIv$k4KfzAEMqMg.fppmSOTd0usI4j6gfjs0962.JXsoJRWa5wMz8yQk4SfInn4.WZ3L/MCt5u.62tHDGB36EhiKF1',
 #	}
 #
@@ -46,9 +44,8 @@ class cobbler(
 	$node_dns,
 	$domain_name,
 	$ip,
-	$dhcp_ip_low = undef,
-	$dhcp_ip_high = undef,
-	$proxy = '',
+	$dhcp_ip_low = false,
+	$dhcp_ip_high = false,
 	$ucs_org = '',
 	$dns_service = undef,
 	$dhcp_service = undef,
