@@ -8,8 +8,9 @@ define cobbler::ubuntu::preseed(
   $password_crypted = '',
   $expert_disk = false,
   $diskpart = [],
-  $boot_disk = undef) {
-
+  $boot_disk = undef,
+  $autostart_puppet = true,
+) {
     if ( ! defined(File['/etc/cobbler/preseeds'])) {
         file { "/etc/cobbler/preseeds":
             ensure => directory
