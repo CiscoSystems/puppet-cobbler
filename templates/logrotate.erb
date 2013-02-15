@@ -1,0 +1,37 @@
+# Cisco OpenStack Edition copy.  This is a workaround.
+#
+# the Ubuntu cobbler package doesn't ship the logrotate config that is in upstream
+# cobbler, so this is *our* copy of it.  Can remove when updating to a Ubuntu cobbler
+# that is actually packaged with a logrotate config, or using the EPEL/Fedora cobbler
+# which has always had it.
+
+/var/log/cobbler/cobbler.log {
+   missingok
+   notifempty
+   rotate 4
+   weekly
+   postrotate
+      if [ -f /var/lock/subsys/cobblerd ]; then
+         /etc/init.d/cobblerd condrestart > /dev/null
+      fi
+   endscript
+}
+
+/var/log/cobbler/tasks/*.log {
+   weekly
+   rotate 0
+   missingok
+   ifempty
+   nocompress
+   nocreate
+   nomail
+}
+
+/var/log/cobbler/install.log {
+   missingok
+   notifempty
+   rotate 4
+   weekly
+}
+
+
