@@ -97,6 +97,11 @@ class cobbler(
 		notify => Exec["restart-cobbler"],
 	}
 
+        file { "/etc/logrotate.d/cobbler_rotate":
+                content => template('cobbler/logrotate.erb'),
+                require => File["/etc/cobbler"],
+        }
+
 	file { "/etc/cobbler/modules.conf":
 		content => template('cobbler/modules.conf.erb'),
 		require => File["/etc/cobbler"],
