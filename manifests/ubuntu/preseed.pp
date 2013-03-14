@@ -12,6 +12,7 @@ define cobbler::ubuntu::preseed(
   $password_crypted = '',
   $expert_disk = false,
   $diskpart = [],
+  $time_zone = 'UTC',
   $boot_disk = undef) {
 
     if ( ! defined(File['/etc/cobbler/preseeds'])) {
