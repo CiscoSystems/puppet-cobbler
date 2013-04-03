@@ -4,4 +4,4 @@
 #else
     #set $org_arg = ""
 #end if
-fence_cisco_ucs $org_arg -a "$power_address" -l "$power_user" -p "$power_pass" -n "$power_id" -o "$power_mode"
+fence_cisco_ucs $org_arg -z -a "$power_address" -l "$power_user" -p "$power_pass" -n "$power_id" -o "$power_mode"
