@@ -93,41 +93,41 @@ class cobbler(
 
 	file { "/etc/cobbler/settings":
 		content => template('cobbler/settings.erb'),
-		require => File["/etc/cobbler"],
+		require => [ File["/etc/cobbler"], Package["cobbler"] ],
 		notify => Exec["restart-cobbler"],
 	}
 
         file { "/etc/logrotate.d/cobbler_rotate":
                 content => template('cobbler/logrotate.erb'),
-                require => File["/etc/cobbler"],
+		require => [ File["/etc/cobbler"], Package["cobbler"] ],
         }
 
 	file { "/etc/cobbler/modules.conf":
 		content => template('cobbler/modules.conf.erb'),
-		require => File["/etc/cobbler"],
+		require => [ File["/etc/cobbler"], Package["cobbler"] ],
 		notify => Exec["restart-cobbler"],
 	}
 
 	file { "/etc/cobbler/dhcp.template":
 		content => template('cobbler/dhcp.template.erb'),
-		require => File["/etc/cobbler"],
+		require => [ File["/etc/cobbler"], Package["cobbler"] ],
 		notify => Exec["restart-cobbler"],
 	}
 	
 	file { "/etc/cobbler/dnsmasq.template":
 		content => template('cobbler/dnsmasq.template.erb'),
-		require => File["/etc/cobbler"],
+		require => [ File["/etc/cobbler"], Package["cobbler"] ],
 		notify => Exec["restart-cobbler"],
 	}
 	
 	file { "/etc/cobbler/power":
 		ensure => directory,
-		require => File["/etc/cobbler"],
+		require => [ File["/etc/cobbler"], Package["cobbler"] ],
 	}
 
 	file { "/etc/cobbler/power/power_ucs.template":
 		content => template('cobbler/power_ucs_domain.erb'),
-		require => File["/etc/cobbler/power"],
+		require => [ File["/etc/cobbler/power"], Package["cobbler"] ],
 	}
 
 	exec { "restart-cobbler":
