@@ -132,7 +132,7 @@ class cobbler(
 		require => [ File["/etc/cobbler/power"], Package["cobbler"] ],
 	}
 
-        service { 'cobbler':
+	service { 'cobbler':
 		ensure => 'running',
 		enable => true,
 		require => Package[cobbler],
