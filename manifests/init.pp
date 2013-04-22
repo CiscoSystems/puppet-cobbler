@@ -94,7 +94,7 @@ class cobbler(
 	file { "/etc/cobbler/settings":
 		content => template('cobbler/settings.erb'),
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
-		notify => Exec["restart-cobbler"],
+		notify => Service['cobbler'],
 	}
 
         file { "/etc/logrotate.d/cobbler_rotate":
@@ -105,19 +105,19 @@ class cobbler(
 	file { "/etc/cobbler/modules.conf":
 		content => template('cobbler/modules.conf.erb'),
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
-		notify => Exec["restart-cobbler"],
+		notify => Service['cobbler'],
 	}
 
 	file { "/etc/cobbler/dhcp.template":
 		content => template('cobbler/dhcp.template.erb'),
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
-		notify => Exec["restart-cobbler"],
+		notify => Service['cobbler'],
 	}
 	
 	file { "/etc/cobbler/dnsmasq.template":
 		content => template('cobbler/dnsmasq.template.erb'),
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
-		notify => Exec["restart-cobbler"],
+		notify => Service['cobbler'],
 	}
 	
 	file { "/etc/cobbler/power":
@@ -130,9 +130,9 @@ class cobbler(
 		require => [ File["/etc/cobbler/power"], Package["cobbler"] ],
 	}
 
-	exec { "restart-cobbler":
-		command => "/usr/sbin/service cobbler restart",
-		refreshonly => true,
+        service { 'cobbler':
+                ensure => 'running',
+                enable => true,
 		require => Package[cobbler],
 	}
 
@@ -140,8 +140,10 @@ class cobbler(
 		command => "/usr/bin/cobbler sync",
 		provider => shell,
 		refreshonly => true,
-		before => Exec[restart-cobbler],
+		before => Service[restart-cobbler],
 		require => Package[cobbler],
 	}
+
+
 
 }
