@@ -133,8 +133,8 @@ class cobbler(
 	}
 
         service { 'cobbler':
-                ensure => 'running',
-                enable => true,
+		ensure => 'running',
+		enable => true,
 		require => Package[cobbler],
 	}
 
