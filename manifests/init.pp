@@ -17,6 +17,7 @@
 # - $dhcp_service		Manage DHCP? defaults to no. options: dnsmasq, isc
 # - $ntp_server			NTP server if the default (ntp.ubuntu.com) isn't reachable
 # - $password_crypted = "x"  - The default 'localadmin' user password, MD5 encrypted. 
+# - $ucsm_port                 The port at which the ucsm accepts requests(for ucs bseries only). Default value is 443(https)
 # 
 # == Requires:
 # 
@@ -50,7 +51,8 @@ class cobbler(
 	$dns_service = undef,
 	$dhcp_service = undef,
 	$ntp_server = undef,
-	$password_crypted = "x")
+	$password_crypted = "x",
+        $ucsm_port)
 {
 
 	package { cobbler:
