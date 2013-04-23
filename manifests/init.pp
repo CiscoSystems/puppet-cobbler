@@ -142,7 +142,7 @@ class cobbler(
 		command => "/usr/bin/cobbler sync",
 		provider => shell,
 		refreshonly => true,
-		before => Service[restart-cobbler],
+		before => Service[cobbler],
 		require => Package[cobbler],
 	}
 
