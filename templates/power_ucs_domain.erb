@@ -4,4 +4,9 @@
 #else
     #set $org_arg = ""
 #end if
-fence_cisco_ucs $org_arg -a "$power_address" -l "$power_user" -p "$power_pass" -n "$power_id" -o "$power_mode"
+<%- if ucsm_port ==  "80" %>
+#set $z_arg = ""
+<%- else %>
+#set $z_arg = "-z"
+<%- end %>
+fence_cisco_ucs $org_arg $z_arg -a "$power_address" -l "$power_user" -p "$power_pass" -n "$power_id" -o "$power_mode"
