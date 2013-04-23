@@ -108,4 +108,6 @@ wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$syste
 <% if autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
 <% if late_command -%><%= late_command -%>
 <% end -%>
+wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name ; \
+wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name
 
