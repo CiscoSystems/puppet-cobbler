@@ -113,15 +113,15 @@ class cobbler(
 	file { "/etc/cobbler/dhcp.template":
 		content => template('cobbler/dhcp.template.erb'),
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
-		notify => Service['cobbler'],
+		notify => Exec['cobbler-sync'],
 	}
-	
+
 	file { "/etc/cobbler/dnsmasq.template":
 		content => template('cobbler/dnsmasq.template.erb'),
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
-		notify => Service['cobbler'],
+		notify => Exec['cobbler-sync'],
 	}
-	
+
 	file { "/etc/cobbler/power":
 		ensure => directory,
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
@@ -142,8 +142,7 @@ class cobbler(
 		command => "/usr/bin/cobbler sync",
 		provider => shell,
 		refreshonly => true,
-		before => Service[cobbler],
-		require => Package[cobbler],
+		require => Service[cobbler],
 	}
 
 
