@@ -51,6 +51,7 @@ define cobbler::node(
 	$boot_disk = '/dev/sda',
 	$add_hosts_entry = true,
 	$log_host = '',
+	$log_port = '',
 	$extra_host_aliases = [])
 {
 
@@ -67,7 +68,12 @@ define cobbler::node(
         }
 
         if($log_host) {
-            $log_opt = "log_host=${log_host} BOOT_DEBUG=2"
+            if ($log_port) {
+                $log_port_opt = "log_port=${log_port}"
+            } else {
+                $log_port_opt = ""
+            }
+            $log_opt = "log_host=${log_host} ${log_port_opt} BOOT_DEBUG=2"
         } else {
             $log_opt = ""
         }
