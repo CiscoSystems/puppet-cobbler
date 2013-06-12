@@ -55,6 +55,7 @@ define cobbler::node(
   $profile,
   $ip,
   $domain,
+  # AFAICT,this doesn't do anything, but it was left here for backward compat
   $node_type = "",
   $preseed,
   $power_address = "",
@@ -67,6 +68,10 @@ define cobbler::node(
   $log_host = '',
   $extra_host_aliases = []
 ) {
+
+  if $node_type != '' {
+    warning("You have set a node_type for cobbler::node, this paramter does nothing and will be deprecated")
+  }
 
   $preseed_file= '/etc/cobbler/preseeds/$preseed'
 
