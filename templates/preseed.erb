@@ -42,7 +42,7 @@ openstack ::                                    \
         $primary{ }                             \
         method{ lvm }                           \
         device{ <%= element %> }                \
-        vg_name{ nova-volumes }                 \
+        vg_name{ cinder-volumes }                 \
 .                                               \
 <% end -%>
 10240 10240 10240 ext4                          \
@@ -50,13 +50,13 @@ openstack ::                                    \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
         mountpoint{ / }                         \
-        in_vg{ nova-volumes }                   \
+        in_vg{ cinder-volumes }                   \
         lv_name{ slash }                        \
 .                                               \
 4098 512 4098 linux-swap                        \
         $lvmok{ }                               \
         method{ swap } format{ }                \
-        in_vg{ nova-volumes }                   \
+        in_vg{ cinder-volumes }                   \
         lv_name{ swap }                         \
 .                                               \
 10240 10240 102400 ext4                         \
@@ -64,13 +64,13 @@ openstack ::                                    \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
         mountpoint{ /var }                      \
-        in_vg{ nova-volumes }                   \
+        in_vg{ cinder-volumes }                   \
         lv_name{ var }                          \
 .                                               \
 10240 10240 102400 ext4                         \
         $lvmok{ }                               \
         mountpoint{ /tmp/hack }                 \
-        in_vg{ nova-volumes }                   \
+        in_vg{ cinder-volumes }                   \
         lv_name{ hack }                         \
 .
 <% else -%>
@@ -103,7 +103,7 @@ d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_por
 <% end %>
 d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 || true;\
 if [ "`debconf-get netcfg/no_default_route`" = "true" ] ; then in-target sed -i.bak -e '/^\tgateway /d' /etc/network/interfaces; fi ;\
-<% if expert_disk -%>/sbin/lvremove -f nova-volumes/hack;\<% end -%>
+<% if expert_disk -%>/sbin/lvremove -f cinder-volumes/hack;\<% end -%>
 <% if autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
 <% if late_command -%><%= late_command -%>
 <% end -%>
