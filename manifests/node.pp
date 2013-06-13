@@ -78,6 +78,15 @@ define cobbler::node(
             $serial_opt = ""
         }
 
+  # the way that escaping works for the shell
+  # provider is difference starting in 2.7.14
+  $v_cmp = versioncmp($puppetversion, '2.7.13')
+  if $v_cmp > 0 {
+    $action_var = "\${action}"
+  } else {
+    $action_var = "\\\${action}"
+  }
+
 	exec { "cobbler-add-node-${name}":
 
 		command => "if cobbler system list | grep ${name};
@@ -86,7 +95,7 @@ define cobbler::node(
                     else
                         action='add --netboot-enabled=true'
                     fi;
- 		    cobbler system \\\${action} \
+ 		    cobbler system ${action_var} \
 				--name='${name}' \
 				--mac-address='${mac}' \
 				--profile='${profile}' \
