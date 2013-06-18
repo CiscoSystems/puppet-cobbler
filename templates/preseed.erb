@@ -1,9 +1,9 @@
 d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
-d-i mirror/http/proxy string <%= proxy %>
+d-i mirror/http/proxy string <%= @proxy %>
 d-i partman/early_command string vgs --separator=: --noheadings | cut -f1 -d: | while read vg ; do vgchange -an $vg ; done ; pvs --separator=: --noheadings | cut -f1 -d: | while read pv ; do pvremove -ff -y $pv ; done
-<% if diskpart.length > 0 %>d-i partman-auto/disk string <% diskpart.each do |element| -%><%= element %> <% end %><% end %>
+<% if @diskpart.length > 0 %>d-i partman-auto/disk string <% @diskpart.each do |element| -%><%= element %> <% end %><% end %>
 d-i partman/alignment string cylinder
 d-i partman-md/device_remove_md boolean true
 d-i partman-md/confirm boolean true
@@ -11,7 +11,7 @@ d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
 d-i partman/choose_partition select Finish
 d-i partman/confirm_write_new_label boolean true
-<% if expert_disk -%>
+<% if @expert_disk -%>
 d-i partman-auto/method string lvm
 d-i partman-basicfilesystems/choose_label string gpt
 d-i partman-basicfilesystems/default_label string gpt
@@ -31,12 +31,12 @@ openstack ::                                    \
 200 200 200 ext3                                \
         $gptonly{ }                             \
         $primary{ }                             \
-        device{ <%= boot_disk %> }              \
+        device{ <%= @boot_disk %> }              \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext3 }    \
         mountpoint{ /boot }                     \
 .                                               \
-<% diskpart.each do |element| -%>20480 1000000 1000000000 ext4                        \
+<% @diskpart.each do |element| -%>20480 1000000 1000000000 ext4                        \
         $defaultignore{ }                       \
         $gptonly{ }                             \
         $primary{ }                             \
@@ -87,25 +87,25 @@ d-i partman/choose_partition select Finish
 d-i partman/confirm_nooverwrite boolean true
 d-i partman/confirm boolean true
 d-i clock-setup/utc boolean true
-<% if  ntp_server -%>d-i clock-setup/ntp boolean true
-d-i clock-setup/ntp-server string <%= ntp_server %><% end %>
-d-i time/zone string <%= time_zone %>
+<% if  @ntp_server -%>d-i clock-setup/ntp boolean true
+d-i clock-setup/ntp-server string <%= @ntp_server %><% end %>
+d-i time/zone string <%= @time_zone %>
 d-i passwd/user-fullname string Admin Adminson
-d-i passwd/username string <%= admin_user %>
-d-i passwd/user-password-crypted password <%= password_crypted %>
+d-i passwd/username string <%= @admin_user %>
+d-i passwd/user-password-crypted password <%= @password_crypted %>
 d-i user-setup/encrypt-home boolean false
 d-i grub-installer/only_debian boolean true
 d-i finish-install/reboot_in_progress note
 d-i pkgsel/update-policy select none
-d-i pkgsel/include string <%= packages %>
-d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name <% if early_command -%> ;\
-<%= early_command %>
+d-i pkgsel/include string <%= @packages %>
+d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name <% if @early_command -%> ;\
+<%= @early_command %>
 <% end %>
 d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 || true;\
 if [ "`debconf-get netcfg/no_default_route`" = "true" ] ; then in-target sed -i.bak -e '/^\tgateway /d' /etc/network/interfaces; fi ;\
-<% if expert_disk -%>/sbin/lvremove -f cinder-volumes/hack;\<% end -%>
-<% if autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
-<% if late_command -%><%= late_command -%>
+<% if @expert_disk -%>/sbin/lvremove -f cinder-volumes/hack;\<% end -%>
+<% if @autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
+<% if @late_command -%><%= @late_command -%>
 <% end -%>
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name ; \
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name ; \

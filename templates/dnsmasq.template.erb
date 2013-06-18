@@ -7,15 +7,15 @@
 #enable-dbus
 read-ethers
 addn-hosts = /var/lib/cobbler/cobbler_hosts
-domain=<%= domain_name %>
+domain=<%= @domain_name %>
 
-<%- if dhcp_ip_low %>
-dhcp-range=<%= dhcp_ip_low %>,<%= dhcp_ip_high %>
+<%- if @dhcp_ip_low %>
+dhcp-range=<%= @dhcp_ip_low %>,<%= @dhcp_ip_high %>
 <%- else %>
-dhcp-range=<%= node_subnet %>,static,<%= node_netmask %>
+dhcp-range=<%= @node_subnet %>,static,<%= @node_netmask %>
 <%- end %>
-<%-if node_gateway %>
-dhcp-option=3,<%= node_gateway %>
+<%-if @node_gateway %>
+dhcp-option=3,<%= @node_gateway %>
 <%-else %>
 dhcp-option=3
 <%-end %>
