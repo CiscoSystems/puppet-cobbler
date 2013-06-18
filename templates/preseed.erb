@@ -1,9 +1,9 @@
 d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
-d-i mirror/http/proxy string <%= proxy %>
+d-i mirror/http/proxy string <%= @proxy %>
 d-i partman/early_command string vgs --separator=: --noheadings | cut -f1 -d: | while read vg ; do vgchange -an $vg ; done ; pvs --separator=: --noheadings | cut -f1 -d: | while read pv ; do pvremove -ff -y $pv ; done
-<% if diskpart.length > 0 %>d-i partman-auto/disk string <% diskpart.each do |element| -%><%= element %> <% end %><% end %>
+<% if @diskpart.length > 0 %>d-i partman-auto/disk string <% @diskpart.each do |element| -%><%= element %> <% end %><% end %>
 d-i partman/alignment string cylinder
 d-i partman-md/device_remove_md boolean true
 d-i partman-md/confirm boolean true
@@ -11,7 +11,7 @@ d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-lvm/confirm boolean true
 d-i partman/choose_partition select Finish
 d-i partman/confirm_write_new_label boolean true
-<% if expert_disk -%>
+<% if @expert_disk -%>
 d-i partman-auto/method string lvm
 d-i partman-basicfilesystems/choose_label string gpt
 d-i partman-basicfilesystems/default_label string gpt
@@ -31,12 +31,12 @@ openstack ::                                    \
 200 200 200 ext3                                \
         $gptonly{ }                             \
         $primary{ }                             \
-        device{ <%= boot_disk %> }              \
+        device{ <%= @boot_disk %> }              \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext3 }    \
         mountpoint{ /boot }                     \
 .                                               \
-<% diskpart.each do |element| -%>20480 1000000 1000000000 ext4                        \
+<% @diskpart.each do |element| -%>20480 1000000 1000000000 ext4                        \
         $defaultignore{ }                       \
         $gptonly{ }                             \
         $primary{ }                             \
@@ -45,7 +45,7 @@ openstack ::                                    \
         vg_name{ cinder-volumes }                 \
 .                                               \
 <% end -%>
-10240 10240 10240 ext4                          \
+10240 384 <% if @root_part_size %><%= @root_part_size %><% else %>32768<% end -%> ext4                          \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
@@ -59,7 +59,7 @@ openstack ::                                    \
         in_vg{ cinder-volumes }                   \
         lv_name{ swap }                         \
 .                                               \
-10240 10240 102400 ext4                         \
+10240 10240 <% if @var_part_size %><%= @var_part_size %><% else %>131072<% end -%> ext4                         \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
