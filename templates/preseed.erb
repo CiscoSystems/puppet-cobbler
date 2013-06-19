@@ -97,7 +97,6 @@ d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_por
 <% end %>
 d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 || true;\
 if [ "`debconf-get netcfg/no_default_route`" = "true" ] ; then in-target sed -i.bak -e '/^\tgateway /d' /etc/network/interfaces; fi ;\
-<% if @expert_disk -%>/sbin/lvremove -f cinder-volumes/hack;\<% end -%>
 <% if @autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
 <% if @late_command -%><%= @late_command -%>
 <% end -%>
