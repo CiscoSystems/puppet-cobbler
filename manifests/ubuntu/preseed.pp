@@ -1,3 +1,5 @@
+# Build a preseed file for Ubuntu for Cobbler
+
 define cobbler::ubuntu::preseed(
   $packages = '',
   $early_command = false, # runs before install
@@ -11,6 +13,8 @@ define cobbler::ubuntu::preseed(
   $time_zone = 'UTC',
   $boot_disk = undef,
   $autostart_puppet = true,
+  $root_part_size = 65536,
+  $var_part_size = 524288,
 ) {
     if ( ! defined(File['/etc/cobbler/preseeds'])) {
         file { "/etc/cobbler/preseeds":
