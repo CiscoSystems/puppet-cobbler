@@ -87,25 +87,25 @@ d-i partman/choose_partition select Finish
 d-i partman/confirm_nooverwrite boolean true
 d-i partman/confirm boolean true
 d-i clock-setup/utc boolean true
-<% if  ntp_server -%>d-i clock-setup/ntp boolean true
-d-i clock-setup/ntp-server string <%= ntp_server %><% end %>
-d-i time/zone string <%= time_zone %>
+<% if  @ntp_server -%>d-i clock-setup/ntp boolean true
+d-i clock-setup/ntp-server string <%= @ntp_server %><% end %>
+d-i time/zone string <%= @time_zone %>
 d-i passwd/user-fullname string Admin Adminson
-d-i passwd/username string <%= admin_user %>
-d-i passwd/user-password-crypted password <%= password_crypted %>
+d-i passwd/username string <%= @admin_user %>
+d-i passwd/user-password-crypted password <%= @password_crypted %>
 d-i user-setup/encrypt-home boolean false
 d-i grub-installer/only_debian boolean true
 d-i finish-install/reboot_in_progress note
 d-i pkgsel/update-policy select none
-d-i pkgsel/include string <%= packages %>
-d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name <% if early_command -%> ;\
-<%= early_command %>
+d-i pkgsel/include string <%= @packages %>
+d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name <% if @early_command -%> ;\
+<%= @early_command %>
 <% end %>
 d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 || true;\
 if [ "`debconf-get netcfg/no_default_route`" = "true" ] ; then in-target sed -i.bak -e '/^\tgateway /d' /etc/network/interfaces; fi ;\
-<% if expert_disk -%>/sbin/lvremove -f cinder-volumes/hack;\<% end -%>
-<% if autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
-<% if late_command -%><%= late_command -%>
+<% if @expert_disk -%>/sbin/lvremove -f cinder-volumes/hack;\<% end -%>
+<% if @autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
+<% if @late_command -%><%= @late_command -%>
 <% end -%>
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name ; \
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name ; \

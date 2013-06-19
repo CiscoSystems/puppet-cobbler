@@ -54,7 +54,7 @@ module = authz_allowall
 # https://fedorahosted.org/cobbler/wiki/ManageDns
 
 [dns]
-module = <% if dns_service == 'dnsmasq' -%>manage_dnsmasq<% else -%>manage_bind<% end -%>
+module = <% if @dns_service == 'dnsmasq' -%>manage_dnsmasq<% else -%>manage_bind<% end -%>
 
 # dhcp:
 # chooses the DHCP management engine if manage_dhcp is enabled
@@ -67,7 +67,7 @@ module = <% if dns_service == 'dnsmasq' -%>manage_dnsmasq<% else -%>manage_bind<
 # https://fedorahosted.org/cobbler/wiki/ManageDhcp
   
 [dhcp]
-module = <% if dhcp_service == 'dnsmasq' -%>manage_dnsmasq<% else -%>manage_isc<% end -%>
+module = <% if @dhcp_service == 'dnsmasq' -%>manage_dnsmasq<% else -%>manage_isc<% end -%>
 
 # tftpd:
 # chooses the TFTP management engine if manage_tftp is enabled
