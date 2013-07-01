@@ -133,8 +133,9 @@ class cobbler(
 	}
 
 	service { 'cobbler':
-		ensure => 'running',
-		enable => true,
+		ensure  => 'running',
+		enable  => true,
+		start   => '/sbin/start cobbler && /bin/sleep 1',
 		require => Package[cobbler],
 	}
 
