@@ -133,17 +133,17 @@ class cobbler(
 	}
 
 	service { 'cobbler':
-		ensure => 'running',
-		enable => true,
+		ensure  => 'running',
+		enable  => true,
+		start   => '/sbin/start cobbler && /bin/sleep 1',
 		require => Package[cobbler],
 	}
 
 	exec { "cobbler-sync":
-		command => "/usr/bin/cobbler sync",
-		provider => shell,
+		command     => "/usr/bin/cobbler sync",
+		provider    => shell,
 		refreshonly => true,
-		before => Service[cobbler],
-		require => Package[cobbler],
+		require     => Service[cobbler],
 	}
 
 
