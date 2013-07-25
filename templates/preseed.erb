@@ -45,6 +45,12 @@ openstack ::                                    \
         vg_name{ cinder-volumes }                 \
 .                                               \
 <% end -%>
+1024 10000 4098 linux-swap                        \
+        $lvmok{ }                               \
+        method{ swap } format{ }                \
+        in_vg{ cinder-volumes }                   \
+        lv_name{ swap }                         \
+.                                               \
 <%= @root_part_size %> 500 <%= @root_part_size %> ext4                          \
         $lvmok{ }                               \
         method{ format } format{ }              \
@@ -52,12 +58,6 @@ openstack ::                                    \
         mountpoint{ / }                         \
         in_vg{ cinder-volumes }                   \
         lv_name{ slash }                        \
-.                                               \
-1024 10000 4098 linux-swap                        \
-        $lvmok{ }                               \
-        method{ swap } format{ }                \
-        in_vg{ cinder-volumes }                   \
-        lv_name{ swap }                         \
 <% if @enable_var %>.                                               \
 <%= @var_part_size %> 1000 100000000 ext4                         \
         $lvmok{ }                               \
