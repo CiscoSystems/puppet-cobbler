@@ -16,7 +16,7 @@ define cobbler::ubuntu::preseed(
   $root_part_size = 32768,
   $var_part_size = 131072,
   $enable_var = true,
-  $enable_hack = true,
+  $enable_vol_space = true,
 ) {
     if ( ! defined(File['/etc/cobbler/preseeds'])) {
         file { "/etc/cobbler/preseeds":

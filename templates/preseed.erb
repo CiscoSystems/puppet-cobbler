@@ -67,7 +67,7 @@ openstack ::                                    \
         in_vg{ cinder-volumes }                   \
         lv_name{ var }                          \
 <% end -%>
-<% if @enable_hack %>.                                               \
+<% if @enable_vol_space %>.                                               \
 1024 20000 1024 ext4                         \
         $lvmok{ }                               \
         mountpoint{ /tmp/hack }                  \
@@ -104,7 +104,7 @@ d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_por
 <% end %>
 d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 || true;\
 if [ "`debconf-get netcfg/no_default_route`" = "true" ] ; then in-target sed -i.bak -e '/^\tgateway /d' /etc/network/interfaces; fi ;\
-<% if @enable_hack -%>/sbin/lvremove -f cinder-volumes/hack; rmdir /tmp/hack ; \<% end -%>
+<% if @enable_vol_space -%>/sbin/lvremove -f cinder-volumes/hack; rmdir /tmp/hack ; \<% end -%>
 <% if @autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
 <% if @late_command -%><%= @late_command -%>
 <% end -%>
