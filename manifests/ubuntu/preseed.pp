@@ -13,8 +13,10 @@ define cobbler::ubuntu::preseed(
   $time_zone = 'UTC',
   $boot_disk = undef,
   $autostart_puppet = true,
-  $root_part_size = 65536,
-  $var_part_size = 524288,
+  $root_part_size = 32768,
+  $var_part_size = 131072,
+  $enable_var = true,
+  $enable_hack = true,
 ) {
     if ( ! defined(File['/etc/cobbler/preseeds'])) {
         file { "/etc/cobbler/preseeds":

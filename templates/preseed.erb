@@ -28,7 +28,7 @@ openstack ::                                    \
         $bios_boot{ }                           \
         method{ biosgrub }                      \
 .                                               \
-200 200 200 ext3                                \
+200 2 200 ext3                                \
         $gptonly{ }                             \
         $primary{ }                             \
         device{ <%= @boot_disk %> }              \
@@ -36,7 +36,7 @@ openstack ::                                    \
         use_filesystem{ } filesystem{ ext3 }    \
         mountpoint{ /boot }                     \
 .                                               \
-<% @diskpart.each do |element| -%>20480 1000000 1000000000 ext4                        \
+<% @diskpart.each do |element| -%>10 10 10 ext4                \
         $defaultignore{ }                       \
         $gptonly{ }                             \
         $primary{ }                             \
@@ -45,7 +45,7 @@ openstack ::                                    \
         vg_name{ cinder-volumes }                 \
 .                                               \
 <% end -%>
-10240 1050 <%= @root_part_size %> ext4                          \
+<%= @root_part_size %> 500 <%= @root_part_size %> ext4                          \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
@@ -53,20 +53,27 @@ openstack ::                                    \
         in_vg{ cinder-volumes }                   \
         lv_name{ slash }                        \
 .                                               \
-1024 1030 4098 linux-swap                        \
+1024 10000 4098 linux-swap                        \
         $lvmok{ }                               \
         method{ swap } format{ }                \
         in_vg{ cinder-volumes }                   \
         lv_name{ swap }                         \
-.                                               \
-10240 1150 <%= @var_part_size %> ext4                         \
+<% if @enable_var %>.                                               \
+<%= @var_part_size %> 1000 100000000 ext4                         \
         $lvmok{ }                               \
         method{ format } format{ }              \
         use_filesystem{ } filesystem{ ext4 }    \
         mountpoint{ /var }                      \
         in_vg{ cinder-volumes }                   \
         lv_name{ var }                          \
-.                                               
+<% end -%>
+<% if @enable_hack %>.                                               \
+1024 20000 1024 ext4                         \
+        $lvmok{ }                               \
+        mountpoint{ /tmp/hack }                  \
+        in_vg{ cinder-volumes }                   \
+        lv_name{ hack }                         \
+<% end -%>.
 <% else -%>
 d-i partman-auto/method string regular
 d-i partman-auto/choose_recipe select atomic
@@ -97,7 +104,7 @@ d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_por
 <% end %>
 d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 || true;\
 if [ "`debconf-get netcfg/no_default_route`" = "true" ] ; then in-target sed -i.bak -e '/^\tgateway /d' /etc/network/interfaces; fi ;\
-<% if @expert_disk -%>/sbin/lvremove -f cinder-volumes/hack;\<% end -%>
+<% if @enable_hack -%>/sbin/lvremove -f cinder-volumes/hack; rmdir /tmp/hack ; \<% end -%>
 <% if @autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
 <% if @late_command -%><%= @late_command -%>
 <% end -%>
