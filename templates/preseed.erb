@@ -108,7 +108,8 @@ d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 ||
 <% if @late_command -%><%= @late_command -%>
 <% end -%>
 if [ "`debconf-get netcfg/no_default_route`" = "true" ] ; then in-target sed -i.bak -e '/^\tgateway /d' /etc/network/interfaces; fi ;\
-<% if @ovs_bridge_uplinks %>sed -e "/address 0.0.0.0/iup ip link set \$IFACE promisc on\ndown ip link set \$IFACE promisc off\n" -i /target/etc/network/interfaces ; \
+<% if @ovs_bridge_uplinks %>sed -e '/address 0.0.0.0/iup ip link set $IFACE promisc on' -i /target/etc/network/interfaces ; \
+sed -e '/address 0.0.0.0/idown ip link set $IFACE promisc off' -i /target/etc/network/interfaces ; \
 <% end -%>
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name ; \
 wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name ; \
