@@ -80,7 +80,7 @@ define cobbler::node(
 
   # the way that escaping works for the shell
   # provider is difference starting in 2.7.14
-  $v_cmp = versioncmp($puppetversion, '2.7.13')
+  $v_cmp = versioncmp($puppet::version, '2.7.13')
   if $v_cmp > 0 {
     $action_var = "\${action}"
   } else {
@@ -106,7 +106,7 @@ define cobbler::node(
 				--kopts='netcfg/disable_autoconfig=true netcfg/dhcp_failed=true netcfg/dhcp_options=\"'\"'\"'Configure network manually'\"'\"'\" netcfg/get_nameservers=${cobbler::node_dns} netcfg/get_ipaddress=${ip} netcfg/get_netmask=${cobbler::node_netmask} ${gateway_opt} netcfg/confirm_static=true partman-auto/disk=${boot_disk} ${serial_opt} ${log_opt}' \
 				--power-user=${power_user} \
 				--power-address=${power_address} \
-				--power-pass=${power_password} \
+				--power-pass='${power_password}' \
 				--power-id=${power_id} \
 				--power-type=${power_type}",
 		provider => shell,
