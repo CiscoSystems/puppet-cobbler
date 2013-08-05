@@ -80,7 +80,7 @@ define cobbler::node(
 
   # the way that escaping works for the shell
   # provider is difference starting in 2.7.14
-  $v_cmp = versioncmp($puppetversion, '2.7.13')
+  $v_cmp = versioncmp($puppet::version, '2.7.13')
   if $v_cmp > 0 {
     $action_var = "\${action}"
   } else {
