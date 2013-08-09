@@ -41,7 +41,6 @@ define cobbler::node(
 	$profile,
 	$ip,
 	$domain,
-	$node_type = "",
 	$preseed,
 	$power_address = "",
 	$power_type = "",
