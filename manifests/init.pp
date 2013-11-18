@@ -52,7 +52,8 @@ class cobbler(
 	$dhcp_service = undef,
 	$ntp_server = undef,
 	$password_crypted = "x",
-        $ucsm_port)
+        $ucsm_port,
+        $diskpart=[])
 {
 
 	package { cobbler:
@@ -131,6 +132,21 @@ class cobbler(
 		content => template('cobbler/power_ucs_domain.erb'),
 		require => [ File["/etc/cobbler/power"], Package["cobbler"] ],
 	}
+	
+	file { "/etc/cobbler/preseed":
+		ensure => directory,
+		require => [ File["/etc/cobbler"], Package["cobbler"] ],
+	}
+
+	file { "/etc/cobbler/preseed/cisco.preseed":
+		content => template('cobbler/preseed.erb'),
+		require => [ File["/etc/cobbler/cobbler.conf"], Package["cobbler"] ],
+	}
+	
+	file{ "/etc/apache2/conf.d/cobbler.conf":
+	        ensure => 'link',
+	        target => '/etc/cobbler/cobbler.conf',
+	}        
 
   service { 'cobbler':
     ensure  => 'running',
