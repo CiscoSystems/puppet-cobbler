@@ -138,7 +138,7 @@ class cobbler(
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
 	}
 
-	file { "/etc/cobbler/preseed/cisco.preseed":
+	file { "/etc/cobbler/preseed/cisco-preseed":
 		content => template('cobbler/preseed.erb'),
 		require => [ File["/etc/cobbler/cobbler.conf"], Package["cobbler"] ],
 	}
