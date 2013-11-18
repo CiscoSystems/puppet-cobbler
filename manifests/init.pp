@@ -132,7 +132,8 @@ class cobbler(
 		content => template('cobbler/power_ucs_domain.erb'),
 		require => [ File["/etc/cobbler/power"], Package["cobbler"] ],
 	}
-	
+
+
 	file { "/etc/cobbler/preseed":
 		ensure => directory,
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
@@ -140,13 +141,21 @@ class cobbler(
 
 	file { "/etc/cobbler/preseed/cisco-preseed":
 		content => template('cobbler/preseed.erb'),
-		require => [ File["/etc/cobbler/cobbler.conf"], Package["cobbler"] ],
+		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
 	}
-	
-	file{ "/etc/apache2/conf.d/cobbler.conf":
-	        ensure => 'link',
-	        target => '/etc/cobbler/cobbler.conf',
-	}        
+
+	file { "/usr/sbin/cobbler_sync.py":
+                mode    => 0755,
+		content => 'scripts/cobbler_sync.py',
+		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
+	}
+
+        file {'/etc/apache2/conf.d/cobbler.conf':
+                ensure => 'link',
+                target => '/etc/cobbler/cobbler.conf',
+        } 
+
+
 
   service { 'cobbler':
     ensure  => 'running',
@@ -156,9 +165,8 @@ class cobbler(
   }
 
 	exec { "cobbler-sync":
-		command => "/usr/bin/cobbler sync",
+		command => "/usr/sbin/cobbler_sync.py",
 		provider => shell,
-		refreshonly => true,
 		require => Service[cobbler],
 	}
 
