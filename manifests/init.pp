@@ -146,7 +146,7 @@ class cobbler(
 
 	file { "/usr/sbin/cobbler_sync.py":
                 mode    => 0755,
-		content => 'scripts/cobbler_sync.py',
+		source => 'puppet:///modules/cobbler/cobbler_sync.py',
 		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
 	}
 
@@ -155,7 +155,9 @@ class cobbler(
                 target => '/etc/cobbler/cobbler.conf',
         } 
 
-
+        file {'/etc/puppet/data/cobbler.yaml':
+             audit => content,
+        }
 
   service { 'cobbler':
     ensure  => 'running',
@@ -168,6 +170,7 @@ class cobbler(
 		command => "/usr/sbin/cobbler_sync.py",
 		provider => shell,
 		require => Service[cobbler],
+                subscribe =>File['/etc/puppet/data/cobbler.yaml']
 	}
 
 
