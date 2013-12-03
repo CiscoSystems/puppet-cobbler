@@ -125,7 +125,7 @@ def main():
         sys.exit(1)
          
     if not cobbler_connect(params.user,params.password):
-        print("unable to connect to cobbler on localhost using %s %s" % (params.user,paarams.password))
+        print("unable to connect to cobbler on localhost using %s %s" % (params.user,params.password))
         sys.exit(1)       
             
     with open(params.yaml, 'r') as file:
