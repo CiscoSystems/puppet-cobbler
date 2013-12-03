@@ -150,6 +150,7 @@ class cobbler(
 		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
 	}
 
+        #ensure the symlink exists
         file {'/etc/apache2/conf.d/cobbler.conf':
                 ensure => 'link',
                 target => '/etc/cobbler/cobbler.conf',
