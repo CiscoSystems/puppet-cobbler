@@ -90,7 +90,7 @@ def update_preseed(vals,preseed,template):
     data = open(template).read()
     for pk,pv in vals.items():       
         data = data.replace('{$' + pk.strip() + '}', pv)
-    open(preseed,'w').write(data)    
+    open(preseed,'w+').write(data)    
 
 # update node properties
 def update_node(node_name, node_dict, global_dict):

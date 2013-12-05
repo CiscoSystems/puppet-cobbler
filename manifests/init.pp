@@ -139,8 +139,8 @@ class cobbler(
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
 	}
 
-	file { "/etc/cobbler/preseed/cisco-preseed":
-		content => template('cobbler/preseed.erb'),
+	file { "/etc/cobbler/preseed/cisco-preseed.template":
+		source => 'puppet://modules/cobbler/cisco-preseed.template',
 		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
 	}
 
@@ -149,6 +149,7 @@ class cobbler(
 		source => 'puppet:///modules/cobbler/cobbler_sync.py',
 		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
 	}
+  
 
         #ensure the symlink exists
         file {'/etc/apache2/conf.d/cobbler.conf':
