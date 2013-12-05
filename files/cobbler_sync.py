@@ -17,6 +17,23 @@ def cobbler_connect(cobbler_user,cobbler_pass):
         return True
     except:
         return False
+
+
+# purge records missing from node list
+def cobbler_purge(nodes):
+    global token,server
+    clist = []
+
+    if len(nodes) > 0:
+        systems = server.get_systems()
+        for system in systems:
+            clist.append(system['name'])
+        for node in clist:
+            if node not in nodes:
+                print node
+                if node not in ['profile','node-global']:
+                    server.remove_system(node,token,False)
+    
         
 # perform cobbler sync
 def cobbler_sync():
@@ -42,7 +59,6 @@ def send_system_update(node_name, node_dict):
 def send_interface_update(node_name, interface_dict):
     global token,server
     sid = server.get_system_handle(node_name,token)
-    print interface_dict
     server.modify_system(sid,'modify_interface',interface_dict,token)
     server.save_system(sid,token)
     
@@ -68,6 +84,13 @@ def update_profile(profile_dict):
     server.save_profile(pid,token)
     
     return code
+
+# update preseed file
+def update_preseed(vals,preseed,template):
+    data = open(template).read()
+    for pk,pv in vals.items():       
+        data = data.replace('{$' + pk.strip() + '}', pv)
+    open(preseed,'w').write(data)    
 
 # update node properties
 def update_node(node_name, node_dict, global_dict):
@@ -109,6 +132,15 @@ def main():
     parser.add_argument("-y", "--yaml", dest="yaml", 
                         metavar="YAML_FILE", type=str,
                         help="cobbler yaml file", default='/etc/puppet/data/cobbler.yaml')
+
+
+    parser.add_argument("-o", "--preseed", dest="preseed", 
+                        metavar="PRESEED_FILE", type=str,
+                        help="cobbler preseed file", default='/etc/cobbler/preseed/cisco-preseed')
+
+    parser.add_argument("-t", "--template", dest="template", 
+                        metavar="TEMPLATE_FILE", type=str,
+                        help="preseed template file", default='/etc/cobbler/preseed/cisco-preseed.template')
     parser.add_argument("-u", "--user", dest="user", 
                         metavar="COBBLER_USER", type=str,
                         help="cobbler user", default='cobbler')
@@ -123,15 +155,28 @@ def main():
     if not os.path.exists(params.yaml):
         parser.error("Yaml file %s does not exist." % (params.yaml))
         sys.exit(1)
+
+    if not os.path.exists(params.yaml):
+        parser.error("Cobbler preseed file %s does not exist." % (params.preseed))
+        sys.exit(1)
+
+    if not os.path.exists(params.template):
+        parser.error("Cobbler preseed template file %s does not exist." % (params.template))
+        sys.exit(1)
          
     if not cobbler_connect(params.user,params.password):
-        print("unable to connect to cobbler on localhost using %s %s" % (params.user,params.password))
+        print("unable to connect to cobbler on localhost using %s %s" % (params.user,paarams.password))
         sys.exit(1)       
             
     with open(params.yaml, 'r') as file:
         nodes = yaml.load(file.read())
 
+    cobbler_purge(nodes)
+
     for name in nodes:
+      if name == 'preseed':
+          update_preseed(nodes['preseed'],params.preseed,params.template)
+
       if name == 'profile':
           profile = nodes[name]
           update_profile(nodes['profile'])
@@ -140,7 +185,7 @@ def main():
           node_globals = nodes[name]
 
     for name in nodes:
-      if name != 'profile' and name != 'node-global':
+      if name not in ['profile','preseed','node-global']:
         update_node(name,nodes[name],node_globals)
         update_node_interfaces(name, nodes[name]['interfaces'])
   
