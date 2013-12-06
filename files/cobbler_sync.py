@@ -131,7 +131,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-y", "--yaml", dest="yaml", 
                         metavar="YAML_FILE", type=str,
-                        help="cobbler yaml file", default='/etc/puppet/data/cobbler.yaml')
+                        help="cobbler yaml file", default='/etc/puppet/data/cobbler/cobbler.yaml')
 
 
     parser.add_argument("-o", "--preseed", dest="preseed", 
