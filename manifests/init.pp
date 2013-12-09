@@ -132,7 +132,11 @@ class cobbler(
 		content => template('cobbler/power_ucs_domain.erb'),
 		require => [ File["/etc/cobbler/power"], Package["cobbler"] ],
 	}
-
+	
+	file { "/etc/cobbler/cobbler.conf":
+                content => template('cobbler/cobbler.conf.erb'),
+                require => [ File["/etc/cobbler"], Package["cobbler"] ],
+        }
 
 	file { "/etc/cobbler/preseed":
 		ensure => directory,
