@@ -13,7 +13,7 @@ def cobbler_connect(cobbler_user,cobbler_pass):
     global token,server
     try:
         server = xmlrpclib.Server("http://localhost/cobbler_api")
-        token = server.login(cobbler_user,cobbler_pass) 
+        token = server.login(cobbler_user,cobbler_pass)
         return True
     except:
         return False
@@ -30,21 +30,20 @@ def cobbler_purge(nodes):
             clist.append(system['name'])
         for node in clist:
             if node not in nodes:
-                print node
                 if node not in ['profile','node-global']:
                     server.remove_system(node,token,False)
-    
-        
+
+
 # perform cobbler sync
 def cobbler_sync():
     global token,server
     server.sync(token)
 
-# send cobbler system update via xmlrpc        
+# send cobbler system update via xmlrpc
 def send_system_update(node_name, node_dict):
     global token,server
-    
-    try:  
+
+    try:
         sid = server.get_system_handle(node_name,token)
     except:
         sid = server.new_system(token)
@@ -54,15 +53,15 @@ def send_system_update(node_name, node_dict):
         if not type(v) is dict:
             server.modify_system(sid,k,v,token)
     server.save_system(sid,token)
-    
-# send interface update via xml-rpc    
+
+# send interface update via xml-rpc
 def send_interface_update(node_name, interface_dict):
     global token,server
     sid = server.get_system_handle(node_name,token)
     server.modify_system(sid,'modify_interface',interface_dict,token)
     server.save_system(sid,token)
-    
-# update profile and distro    
+
+# update profile and distro
 def update_profile(profile_dict):
     global token,server
     distname = profile_dict['name']
@@ -74,7 +73,7 @@ def update_profile(profile_dict):
         command = command + ' -u %s-%s' % (distname,distarch)
     except:
         command = command + ' %s-%s' % (distname,distarch)
-   
+
     code = os.system(command)
 
     pid = server.get_profile_handle('%s-%s' % (distname,distarch),token)
@@ -82,15 +81,18 @@ def update_profile(profile_dict):
         if not type(v) is dict:
             server.modify_profile(pid,k,v,token)
     server.save_profile(pid,token)
-    
+
     return code
 
 # update preseed file
 def update_preseed(vals,preseed,template):
     data = open(template).read()
-    for pk,pv in vals.items():       
+    if vals == None:
+        open(preseed,'w+').write(data)
+        return
+    for pk,pv in vals.items():
         data = data.replace('{$' + pk.strip() + '}', pv)
-    open(preseed,'w+').write(data)    
+    open(preseed,'w+').write(data)
 
 # update node properties
 def update_node(node_name, node_dict, global_dict):
@@ -98,14 +100,14 @@ def update_node(node_name, node_dict, global_dict):
     #merge in the globals
     node_dict.update(global_dict)
 
-    #node parameter substitution    
+    #node parameter substitution
     for sk,sv in node_dict.items():
         for rk,rv in node_dict.items():
             if not type(sv) is dict:
                 if not type(rv) is dict:
                     node_dict[sk] = node_dict[sk].replace('{$' + rk + '}',rv)
-    
-    #interface parameter substitution          
+
+    #interface parameter substitution
     for sk,sv in node_dict.items():
         ifaces = node_dict.get('interfaces',{})
         for ik,iv in ifaces.items():
@@ -113,69 +115,65 @@ def update_node(node_name, node_dict, global_dict):
                 if not type(node_dict[sk]) is dict:
                     node_dict[sk] = node_dict[sk].replace('{$' + ik + '_' + pk + '}',pv)
 
-    
-    return send_system_update(node_name,node_dict)             
+
+    return send_system_update(node_name,node_dict)
 
 
-# update interfaces for a cobbler node    
+# update interfaces for a cobbler node
 def update_node_interfaces(node_name, interfaces_dict):
 
-    for ik,iv in interfaces_dict.items():    
+    for ik,iv in interfaces_dict.items():
         props = {}
         for pk,pv in iv.items():
             props[pk.replace('-','') + '-' + ik ] = pv
-        send_interface_update(node_name,props)               
- 
+        send_interface_update(node_name,props)
+
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-y", "--yaml", dest="yaml", 
+    parser.add_argument("-y", "--yaml", dest="yaml",
                         metavar="YAML_FILE", type=str,
                         help="cobbler yaml file", default='/etc/puppet/data/cobbler/cobbler.yaml')
 
 
-    parser.add_argument("-o", "--preseed", dest="preseed", 
+    parser.add_argument("-o", "--preseed", dest="preseed",
                         metavar="PRESEED_FILE", type=str,
                         help="cobbler preseed file", default='/etc/cobbler/preseed/cisco-preseed')
 
-    parser.add_argument("-t", "--template", dest="template", 
+    parser.add_argument("-t", "--template", dest="template",
                         metavar="TEMPLATE_FILE", type=str,
                         help="preseed template file", default='/etc/cobbler/preseed/cisco-preseed.template')
-    parser.add_argument("-u", "--user", dest="user", 
+    parser.add_argument("-u", "--user", dest="user",
                         metavar="COBBLER_USER", type=str,
                         help="cobbler user", default='cobbler')
-    parser.add_argument("-p", "--password", dest="password", 
+    parser.add_argument("-p", "--password", dest="password",
                         metavar="COBBLER_PASS", type=str,
-                        help="cobbler password", default='')  
-                                                              
+                        help="cobbler password", default='')
+
     params = parser.parse_args()
 
-  
-    
-    if not os.path.exists(params.yaml):
-        parser.error("Yaml file %s does not exist." % (params.yaml))
-        sys.exit(1)
+
 
     if not os.path.exists(params.yaml):
-        parser.error("Cobbler preseed file %s does not exist." % (params.preseed))
+        parser.error("Yaml file %s does not exist." % (params.yaml))
         sys.exit(1)
 
     if not os.path.exists(params.template):
         parser.error("Cobbler preseed template file %s does not exist." % (params.template))
         sys.exit(1)
-         
+
     if not cobbler_connect(params.user,params.password):
-        print("unable to connect to cobbler on localhost using %s %s" % (params.user,paarams.password))
-        sys.exit(1)       
-            
+        print("unable to connect to cobbler on localhost using %s %s" % (params.user,params.password))
+        sys.exit(1)
+
     with open(params.yaml, 'r') as file:
         nodes = yaml.load(file.read())
+
+    update_preseed(nodes['preseed'],params.preseed,params.template)
 
     cobbler_purge(nodes)
 
     for name in nodes:
-      if name == 'preseed':
-          update_preseed(nodes['preseed'],params.preseed,params.template)
 
       if name == 'profile':
           profile = nodes[name]
@@ -188,10 +186,10 @@ def main():
       if name not in ['profile','preseed','node-global']:
         update_node(name,nodes[name],node_globals)
         update_node_interfaces(name, nodes[name]['interfaces'])
-  
+
     #send cobbler sync and exit
     cobbler_sync()
     sys.exit(0)
-    
+
 if __name__ == "__main__":
     main()
