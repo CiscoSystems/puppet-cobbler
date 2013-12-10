@@ -1,0 +1,137 @@
+d-i mirror/country string manual
+d-i mirror/http/hostname string us.archive.ubuntu.com
+d-i mirror/http/directory string /ubuntu
+d-i mirror/http/proxy string http://2.4.1.254:3142/
+d-i partman/early_command string vgs --separator=: --noheadings | cut -f1 -d: | while read vg ; do vgchange -an $vg ; done ; pvs --separator=: --noheadings | cut -f1 -d: | while read pv ; do pvremove -ff -y $pv ; done
+d-i partman-auto/disk string /dev/sda
+d-i partman/alignment string cylinder
+d-i partman-md/device_remove_md boolean true
+d-i partman-md/confirm boolean true
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman/choose_partition select Finish
+d-i partman/confirm_write_new_label boolean true
+d-i partman-auto/method string lvm
+d-i partman-basicfilesystems/choose_label string gpt
+d-i partman-basicfilesystems/default_label string gpt
+d-i partman-partitioning/choose_label string gpt
+d-i partman-partitioning/default_label string gpt
+d-i partman/choose_label string gpt
+d-i partman/default_label string gpt
+d-i partman-auto/choose_recipe select openstack
+d-i partman-auto/expert_recipe string           \
+openstack ::                                    \
+1 1 1 free                                      \
+        $gptonly{ }                             \
+        $primary{ }                             \
+        $bios_boot{ }                           \
+        method{ biosgrub }                      \
+.                                               \
+200 2 200 ext3                                \
+        $gptonly{ }                             \
+        $primary{ }                             \
+        device{ /dev/sda }              \
+        method{ format } format{ }              \
+        use_filesystem{ } filesystem{ ext3 }    \
+        mountpoint{ /boot }                     \
+.                                               \
+10 10 10 ext4                \
+        $defaultignore{ }                       \
+        $gptonly{ }                             \
+        $primary{ }                             \
+        method{ lvm }                           \
+        device{ /dev/sda }                \
+        vg_name{ cinder-volumes }                 \
+.                                               \
+1024 10000 4098 linux-swap                        \
+        $lvmok{ }                               \
+        method{ swap } format{ }                \
+        in_vg{ cinder-volumes }                   \
+        lv_name{ swap }                         \
+.                                               \
+65536 500 65536 ext4                          \
+        $lvmok{ }                               \
+        method{ format } format{ }              \
+        use_filesystem{ } filesystem{ ext4 }    \
+        mountpoint{ / }                         \
+        in_vg{ cinder-volumes }                   \
+        lv_name{ slash }                        \
+.                                               \
+1048576 1000 100000000 ext4                         \
+        $lvmok{ }                               \
+        method{ format } format{ }              \
+        use_filesystem{ } filesystem{ ext4 }    \
+        mountpoint{ /var }                      \
+        in_vg{ cinder-volumes }                   \
+        lv_name{ var }                          \
+.                                               \
+1024 20000 1024 ext4                         \
+        $lvmok{ }                               \
+        mountpoint{ /tmp/hack }                  \
+        in_vg{ cinder-volumes }                   \
+        lv_name{ hack }                         \
+.
+d-i partman/choose_partition        select Finish partitioning and write changes to disk
+d-i partman-md/confirm_nooverwrite boolean true
+d-i partman-md/confirm boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select Finish
+d-i partman/confirm_nooverwrite boolean true
+d-i partman/confirm boolean true
+d-i clock-setup/utc boolean true
+
+d-i time/zone string UTC
+d-i passwd/user-fullname string Admin Adminson
+d-i passwd/username string localadmin
+d-i passwd/user-password-crypted password $6$UfgWxrIv$k4KfzAEMqMg.fppmSOTd0usI4j6gfjs0962.JXsoJRWa5wMz8yQk4SfInn4.WZ3L/MCt5u.62tHDGB36EhiKF1
+d-i user-setup/encrypt-home boolean false
+d-i grub-installer/only_debian boolean true
+d-i finish-install/reboot_in_progress note
+d-i pkgsel/update-policy select none
+d-i pkgsel/include string openssh-server vim vlan lvm2 ntp puppet
+d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name
+d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 || true;\
+/sbin/lvremove -f cinder-volumes/hack; rmdir /tmp/hack ; \sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\
+sed -e "/logdir/ a pluginsync=true" -i /target/etc/puppet/puppet.conf ; \
+sed -e "/logdir/ a server=build-server.cisco.com" -i /target/etc/puppet/puppet.conf ; \
+echo -e "server build-server.cisco.com iburst" > /target/etc/ntp.conf ; \
+echo "8021q" >> /target/etc/modules ; \
+echo "no bonding configured" ; \
+echo "net.ipv6.conf.default.autoconf=0" >> /target/etc/sysctl.conf ; \
+echo "net.ipv6.conf.default.accept_ra=0" >> /target/etc/sysctl.conf ; \
+echo "net.ipv6.conf.all.autoconf=0" >> /target/etc/sysctl.conf ; \
+echo "net.ipv6.conf.all.accept_ra=0" >> /target/etc/sysctl.conf ; \
+ifconf="`tail +11 </etc/network/interfaces`" ; \
+echo -e "# This file describes the network interfaces available on your system\n\
+# and how to activate them. For more information, see interfaces(5).\n\
+\n\
+# The loopback network interface\n\
+auto lo\n\
+iface lo inet loopback\n\
+\n\
+auto eth2\n\
+iface eth2 inet static\n\
+$ifconf\n\
+\n\
+auto eth3\n\
+iface eth3 inet static\n\
+  address 0.0.0.0\n\
+  netmask 255.255.255.255\n\
+\n\
+" > /target/etc/network/interfaces ; \
+echo -e "deb http://apt.puppetlabs.com precise main\n\
+deb-src http://apt.puppetlabs.com precise main\n\
+deb http://apt.puppetlabs.com precise dependencies\n\
+deb-src http://apt.puppetlabs.com precise dependencies\n\
+" > /target/etc/apt/sources.list.d/puppetlabs.list ; \
+sed -e "s/^[ ]*//" -i /target/etc/network/interfaces ; \
+if [ "`debconf-get netcfg/no_default_route`" = "true" ] ; then in-target sed -i.bak -e '/^\tgateway /d' /etc/network/interfaces; fi ;\
+wget -O /target/opt/puppetlabs.key http://$http_server:$http_port/keys/puppetlabs.key ; \
+apt-key add /target/opt/puppetlabs.key ; \
+apt-get update ; \
+apt-get install -y puppet rubygems ; \
+wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/nopxe/system/$system_name ; \
+wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/post/system/$system_name ; \
+true

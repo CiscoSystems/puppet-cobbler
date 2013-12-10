@@ -52,7 +52,8 @@ class cobbler(
 	$dhcp_service = undef,
 	$ntp_server = undef,
 	$password_crypted = "x",
-        $ucsm_port)
+        $ucsm_port,
+        $diskpart=[])
 {
 
 	package { cobbler:
@@ -131,6 +132,38 @@ class cobbler(
 		content => template('cobbler/power_ucs_domain.erb'),
 		require => [ File["/etc/cobbler/power"], Package["cobbler"] ],
 	}
+	
+	file { "/etc/cobbler/cobbler.conf":
+                content => template('cobbler/cobbler.conf.erb'),
+                require => [ File["/etc/cobbler"], Package["cobbler"] ],
+        }
+
+	file { "/etc/cobbler/preseed":
+		ensure => directory,
+		require => [ File["/etc/cobbler"], Package["cobbler"] ],
+	}
+
+	file { "/etc/cobbler/preseed/cisco-preseed.template":
+		source => 'puppet:///modules/cobbler/cisco-preseed.template',
+		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
+	}
+
+	file { "/usr/sbin/cobbler_sync.py":
+                mode    => 0755,
+		source => 'puppet:///modules/cobbler/cobbler_sync.py',
+		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
+	}
+  
+
+        #ensure the symlink exists
+        file {'/etc/apache2/conf.d/cobbler.conf':
+                ensure => 'link',
+                target => '/etc/cobbler/cobbler.conf',
+        } 
+
+        file {'/etc/puppet/data/cobbler.yaml':
+             audit => content,
+        }
 
   service { 'cobbler':
     ensure  => 'running',
@@ -140,10 +173,10 @@ class cobbler(
   }
 
 	exec { "cobbler-sync":
-		command => "/usr/bin/cobbler sync",
+		command => "/usr/sbin/cobbler_sync.py",
 		provider => shell,
-		refreshonly => true,
 		require => Service[cobbler],
+                subscribe =>File['/etc/puppet/data/cobbler.yaml']
 	}
 
 
