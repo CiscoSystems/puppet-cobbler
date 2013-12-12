@@ -73,24 +73,17 @@ class cobbler(
 	}
 
 	if ($dns_package) {
-        # Neutron package may want these as well, so
-        # use ensure_resource to prevent dup errors
-        if ($dns_package == 'dnsmasq') {
-            ensure_resource("package", "dnsmasq", {
+        package { 'dns-cobbler':
 			    ensure => present,
-                name   => ['dnsmasq-base', 'dnsmasq-utils']
-		    })
-        } else {
-            ensure_resource("package", "$dns_package", {
-                ensure => present
-	        })
+                name   => "$dns_package",
         }
-	}
+    }
   
 	if ($dhcp_package) {
 		if ($dhcp_package != $dns_package) {
-			package { $dhcp_package:
-				ensure => present
+			package { 'dhcp-cobbler':
+				ensure => present,
+                name   => "$dhcp_package",
 			}
 		}
 	}
