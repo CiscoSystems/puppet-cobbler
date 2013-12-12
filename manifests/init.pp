@@ -72,26 +72,15 @@ class cobbler(
 		default => undef,
 	}
 
+    # use ensure_packages to avoid conflicting with puppet-neutron
+    # when installing dnsmasq
 	if ($dns_package) {
-        # Neutron package may want these as well, so
-        # use ensure_resource to prevent dup errors
-        if ($dns_package == 'dnsmasq') {
-            ensure_resource("package", "dnsmasq", {
-			    ensure => present,
-                name   => ['dnsmasq-base', 'dnsmasq-utils']
-		    })
-        } else {
-            ensure_resource("package", "$dns_package", {
-                ensure => present
-	        })
-        }
-	}
+        ensure_packages([$dns_package])
+    }
   
 	if ($dhcp_package) {
 		if ($dhcp_package != $dns_package) {
-			package { $dhcp_package:
-				ensure => present
-			}
+            ensure_packages([$dhcp_package])
 		}
 	}
 
