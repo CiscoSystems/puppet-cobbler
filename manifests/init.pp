@@ -73,9 +73,9 @@ class cobbler(
 	}
 
 	if ($dns_package) {
-		package { "$dns_package":
+		ensure_resource("package", "$dns_package", {
 			ensure => present
-		}
+		})
 	}
   
 	if ($dhcp_package) {
