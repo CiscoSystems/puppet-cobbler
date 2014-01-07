@@ -1,7 +1,10 @@
 d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
-d-i mirror/http/proxy string <%= @proxy %>
+d-i mirror/http/proxy string http://$http_server:3142/
+d-i apt-setup/local0/repository string \
+       http://openstack-repo.cisco.com/openstack/cisco havana-proposed main 
+d-i debian-installer/allow_unauthenticated boolean true
 d-i partman/early_command string vgs --separator=: --noheadings | cut -f1 -d: | while read vg ; do vgchange -an $vg ; done ; pvs --separator=: --noheadings | cut -f1 -d: | while read pv ; do pvremove -ff -y $pv ; done
 <% if @diskpart.length > 0 %>d-i partman-auto/disk string <% @diskpart.each do |element| -%><%= element %> <% end %><% end %>
 d-i partman/alignment string cylinder

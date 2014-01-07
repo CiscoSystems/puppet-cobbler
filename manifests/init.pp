@@ -142,7 +142,7 @@ class cobbler(
 	}
 
 	file { "/etc/cobbler/preseed/cisco-preseed.template":
-		source => 'puppet:///modules/cobbler/cisco-preseed.template',
+                content => template('cobbler/preseed.erb'),
 		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
 	}
 

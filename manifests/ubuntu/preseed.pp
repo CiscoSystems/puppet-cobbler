@@ -18,13 +18,13 @@ define cobbler::ubuntu::preseed(
   $enable_var = true,
   $enable_vol_space = true,
 ) {
-    if ( ! defined(File['/etc/cobbler/preseeds'])) {
-        file { "/etc/cobbler/preseeds":
+    if ( ! defined(File['/etc/cobbler/preseed'])) {
+        file { "/etc/cobbler/preseed":
             ensure => directory
         }
     }
 
-    file { "/etc/cobbler/preseeds/${name}":
+    file { "/etc/cobbler/preseed/${name}":
         content => template("cobbler/preseed.erb")
     }
 }
