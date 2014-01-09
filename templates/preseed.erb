@@ -2,9 +2,6 @@ d-i mirror/country string manual
 d-i mirror/http/hostname string us.archive.ubuntu.com
 d-i mirror/http/directory string /ubuntu
 d-i mirror/http/proxy string http://$http_server:3142/
-d-i apt-setup/local0/repository string \
-       http://openstack-repo.cisco.com/openstack/cisco havana-proposed main 
-d-i debian-installer/allow_unauthenticated boolean true
 d-i partman/early_command string vgs --separator=: --noheadings | cut -f1 -d: | while read vg ; do vgchange -an $vg ; done ; pvs --separator=: --noheadings | cut -f1 -d: | while read pv ; do pvremove -ff -y $pv ; done
 <% if @diskpart.length > 0 %>d-i partman-auto/disk string <% @diskpart.each do |element| -%><%= element %> <% end %><% end %>
 d-i partman/alignment string cylinder
@@ -105,7 +102,44 @@ d-i pkgsel/include string <%= @packages %>
 d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_port/cblr/svc/op/trig/mode/pre/system/$system_name <% if @early_command -%> ;\
 <%= @early_command %>
 <% end %>
-d-i preseed/late_command string in-target puppet agent --test --waitforcert 0 || true;\
+d-i preseed/late_command string \
+in-target echo "Adding Cisco repo..."; if [ ! -d /etc/apt/sources.list.d ] ; then mkdir -p /target/etc/apt/sources.list.d;fi; echo "deb http://openstack-repo.cisco.com/openstack/cisco havana-proposed main" > /target/etc/apt/sources.list.d/cisco-openstack-mirror_havana.list; \
+in-target echo "deb-src http://openstack-repo.cisco.com/openstack/cisco_supplemental havana-proposed main" > /target/etc/apt/sources.list.d/cisco_supplemental-openstack-mirror_havana.list; \
+echo -e "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\
+Version: GnuPG v1.4.11 (GNU/Linux)\n\
+\n\
+mQENBE/oXVkBCACcjAcV7lRGskECEHovgZ6a2robpBroQBW+tJds7B+qn/DslOAN\n\
+1hm0UuGQsi8pNzHDE29FMO3yOhmkenDd1V/T6tHNXqhHvf55nL6anlzwMmq3syIS\n\
+uqVjeMMXbZ4d+Rh0K/rI4TyRbUiI2DDLP+6wYeh1pTPwrleHm5FXBMDbU/OZ5vKZ\n\
+67j99GaARYxHp8W/be8KRSoV9wU1WXr4+GA6K7ENe2A8PT+jH79Sr4kF4uKC3VxD\n\
+BF5Z0yaLqr+1V2pHU3AfmybOCmoPYviOqpwj3FQ2PhtObLs+hq7zCviDTX2IxHBb\n\
+Q3mGsD8wS9uyZcHN77maAzZlL5G794DEr1NLABEBAAG0NU9wZW5TdGFja0BDaXNj\n\
+byBBUFQgcmVwbyA8b3BlbnN0YWNrLWJ1aWxkZEBjaXNjby5jb20+iQE4BBMBAgAi\n\
+BQJP6F1ZAhsDBgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRDozGcFPtOxmXcK\n\
+B/9WvQrBwxmIMV2M+VMBhQqtipvJeDX2Uv34Ytpsg2jldl0TS8XheGlUNZ5djxDy\n\
+u3X0hKwRLeOppV09GVO3wGizNCV1EJjqQbCMkq6VSJjD1B/6Tg+3M/XmNaKHK3Op\n\
+zSi+35OQ6xXc38DUOrigaCZUU40nGQeYUMRYzI+d3pPlNd0+nLndrE4rNNFB91dM\n\
+BTeoyQMWd6tpTwz5MAi+I11tCIQAPCSG1qR52R3bog/0PlJzilxjkdShl1Cj0RmX\n\
+7bHIMD66uC1FKCpbRaiPR8XmTPLv29ZTk1ABBzoynZyFDfliRwQi6TS20TuEj+ZH\n\
+xq/T6MM6+rpdBVz62ek6/KBcuQENBE/oXVkBCACgzyyGvvHLx7g/Rpys1WdevYMH\n\
+THBS24RMaDHqg7H7xe0fFzmiblWjV8V4Yy+heLLV5nTYBQLS43MFvFbnFvB3ygDI\n\
+IdVjLVDXcPfcp+Np2PE8cJuDEE4seGU26UoJ2pPK/IHbnmGWYwXJBbik9YepD61c\n\
+NJ5XMzMYI5z9/YNupeJoy8/8uxdxI/B66PL9QN8wKBk5js2OX8TtEjmEZSrZrIuM\n\
+rVVXRU/1m732lhIyVVws4StRkpG+D15Dp98yDGjbCRREzZPeKHpvO/Uhn23hVyHe\n\
+PIc+bu1mXMQ+N/3UjXtfUg27hmmgBDAjxUeSb1moFpeqLys2AAY+yXiHDv57ABEB\n\
+AAGJAR8EGAECAAkFAk/oXVkCGwwACgkQ6MxnBT7TsZng+AgAnFogD90f3ByTVlNp\n\
+Sb+HHd/cPqZ83RB9XUxRRnkIQmOozUjw8nq8I8eTT4t0Sa8G9q1fl14tXIJ9szzz\n\
+BUIYyda/RYZszL9rHhucSfFIkpnp7ddfE9NDlnZUvavnnyRsWpIZa6hJq8hQEp92\n\
+IQBF6R7wOws0A0oUmME25Rzam9qVbywOh9ZQvzYPpFaEmmjpCRDxJLB1DYu8lnC4\n\
+h1jP1GXFUIQDbcznrR2MQDy5fNt678HcIqMwVp2CJz/2jrZlbSKfMckdpbiWNns/\n\
+xKyLYs5m34d4a0it6wsMem3YCefSYBjyLGSd/kCI/CgOdGN1ZY1HSdLmmjiDkQPQ\n\
+UcXHbA==\n\
+=v6jg\n\
+-----END PGP PUBLIC KEY BLOCK-----\n" > /target/root/cisco_key.gpg ;\
+in-target /usr/bin/apt-key add /root/cisco_key.gpg ;\
+in-target /usr/bin/apt-get update;\
+in-target /usr/bin/apt-get install puppet -y;\
+in-target puppet agent --test --waitforcert 0 || true;\
 <% if @enable_vol_space -%>/sbin/lvremove -f cinder-volumes/hack; rmdir /tmp/hack ; \<% end -%>
 <% if @autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
 <% if @late_command -%><%= @late_command -%>
