@@ -103,6 +103,8 @@ d-i preseed/early_command string wget -O /dev/null http://$http_server:$http_por
 <%= @early_command %>
 <% end %>
 d-i preseed/late_command string \
+<% if @ntp_server -%>in-target ntpdate <%= @ntp_server %> ; \
+in-target hwclock --systohc --utc ; \<% end -%>
 in-target echo "Adding Cisco repo..."; if [ ! -d /etc/apt/sources.list.d ] ; then mkdir -p /target/etc/apt/sources.list.d;fi; echo "deb http://openstack-repo.cisco.com/openstack/cisco havana main" > /target/etc/apt/sources.list.d/cisco-openstack-mirror_havana.list; \
 in-target echo "deb-src http://openstack-repo.cisco.com/openstack/cisco_supplemental havana main" > /target/etc/apt/sources.list.d/cisco_supplemental-openstack-mirror_havana.list; \
 echo -e "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\
