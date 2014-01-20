@@ -17,6 +17,10 @@ define cobbler::ubuntu::preseed(
   $var_part_size = 131072,
   $enable_var = true,
   $enable_vol_space = true,
+  $openstack_release = 'havana',
+  $openstack_repo_location = 'http://openstack-repo.cisco.com/openstack/cisco',
+  $supplemental_repo = 'http://openstack-repo.cisco.com/openstack/cisco_supplemental',
+  $pocket = '',
 ) {
     if ( ! defined(File['/etc/cobbler/preseed'])) {
         file { "/etc/cobbler/preseed":
