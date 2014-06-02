@@ -143,7 +143,7 @@ in-target /usr/bin/apt-get update;\
 in-target /usr/bin/apt-get dist-upgrade -y ;\
 in-target /usr/bin/apt-get install puppet -y || true;\
 <% if @enable_vol_space -%>/sbin/lvremove -f cinder-volumes/hack; rmdir /tmp/hack ; \<% end -%>
-<% if @autostart_puppet %>sed -e 's/START=no/START=yes/' -i /target/etc/default/puppet ;\<% end -%>
+<% if @autostart_puppet %>in-target puppet agent --enable ;\<% end -%>
 <% if @late_command -%><%= @late_command -%>
 <% end -%>
 if [ "`debconf-get netcfg/no_default_route`" = "true" ] ; then in-target sed -i.bak -e '/^\tgateway /d' /etc/network/interfaces; fi ;\
