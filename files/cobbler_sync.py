@@ -22,7 +22,7 @@ def get_bind_ip():
 def cobbler_connect(cobbler_user,cobbler_pass,bindip):
     global token,server
     try:
-        server = xmlrpclib.Server('http://' + bindip '/cobbler_api')
+        server = xmlrpclib.Server('http://' + bindip + '/cobbler_api')
         token = server.login(cobbler_user,cobbler_pass)
         return True
     except:
