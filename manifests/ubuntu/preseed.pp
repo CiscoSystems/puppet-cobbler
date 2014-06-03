@@ -31,4 +31,9 @@ define cobbler::ubuntu::preseed(
     file { "/etc/cobbler/preseed/${name}":
         content => template("cobbler/preseed.erb")
     }
+
+    file { "/etc/cobbler/preseed/${name}.template":
+        source  => "/etc/cobbler/preseed/${name}",
+        require => File["/etc/cobbler/preseed/${name}"],
+    }
 }
