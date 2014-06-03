@@ -141,11 +141,6 @@ class cobbler(
 		require => [ File["/etc/cobbler"], Package["cobbler"] ],
 	}
 
-	file { "/etc/cobbler/preseed/cisco-preseed.template":
-                content => template('cobbler/preseed.erb'),
-		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
-	}
-
 	file { "/usr/sbin/cobbler_sync.py":
                 mode    => 0755,
 		source => 'puppet:///modules/cobbler/cobbler_sync.py',
