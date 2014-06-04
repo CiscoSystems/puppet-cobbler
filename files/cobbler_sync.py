@@ -9,10 +9,20 @@ import xmlrpclib
 token = None
 server=None
 
-def cobbler_connect(cobbler_user,cobbler_pass):
+
+def get_bind_ip():
+    ip = 'localhost'
+    if os.path.exists('/etc/cobbler/settings'):
+        cfg = open('/etc/cobbler/settings').readlines()
+        for line in cfg:
+            if line.strip().startswith('server:'):
+                ip = line.split()[1]
+    return ip
+
+def cobbler_connect(cobbler_user,cobbler_pass,bindip):
     global token,server
     try:
-        server = xmlrpclib.Server("http://localhost/cobbler_api")
+        server = xmlrpclib.Server('http://' + bindip + '/cobbler_api')
         token = server.login(cobbler_user,cobbler_pass)
         return True
     except:
@@ -135,7 +145,6 @@ def main():
                         metavar="YAML_FILE", type=str,
                         help="cobbler yaml file", default='/etc/puppet/data/cobbler/cobbler.yaml')
 
-
     parser.add_argument("-o", "--preseed", dest="preseed",
                         metavar="PRESEED_FILE", type=str,
                         help="cobbler preseed file", default='/etc/cobbler/preseed/cisco-preseed')
@@ -143,13 +152,15 @@ def main():
     parser.add_argument("-t", "--template", dest="template",
                         metavar="TEMPLATE_FILE", type=str,
                         help="preseed template file", default='/etc/cobbler/preseed/cisco-preseed.template')
+                        
     parser.add_argument("-u", "--user", dest="user",
                         metavar="COBBLER_USER", type=str,
                         help="cobbler user", default='cobbler')
+                        
     parser.add_argument("-p", "--password", dest="password",
                         metavar="COBBLER_PASS", type=str,
                         help="cobbler password", default='')
-
+                        
     params = parser.parse_args()
 
 
@@ -161,8 +172,10 @@ def main():
     if not os.path.exists(params.template):
         parser.error("Cobbler preseed template file %s does not exist." % (params.template))
         sys.exit(1)
+        
+    bindip = get_bind_ip()    
 
-    if not cobbler_connect(params.user,params.password):
+    if not cobbler_connect(params.user,params.password,bindip):
         print("unable to connect to cobbler on localhost using %s %s" % (params.user,params.password))
         sys.exit(1)
 

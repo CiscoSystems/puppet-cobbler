@@ -147,6 +147,11 @@ class cobbler(
 		require => [ File["/etc/cobbler/preseed"], Package["cobbler"] ],
 	}
   
+  	file { "/usr/sbin/fence_ucs":
+                mode    => 0755,
+		source => 'puppet:///modules/cobbler/fence_ucs',
+		require => Package["cobbler"],
+	}
 
         #ensure the symlink exists
         file {'/etc/apache2/conf.d/cobbler.conf':
@@ -168,7 +173,7 @@ class cobbler(
 	exec { "cobbler-sync":
 		command => "/usr/sbin/cobbler_sync.py",
 		provider => shell,
-		require => Service[cobbler],
+		require => [Service[cobbler], File['/etc/cobbler/settings']],
                 subscribe =>File['/etc/puppet/data/cobbler.yaml']
 	}
 
