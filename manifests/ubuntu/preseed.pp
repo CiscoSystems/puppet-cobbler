@@ -21,6 +21,7 @@ define cobbler::ubuntu::preseed(
   $openstack_repo_location = 'http://openstack-repo.cisco.com/openstack/cisco',
   $supplemental_repo = 'http://openstack-repo.cisco.com/openstack/cisco_supplemental',
   $pocket = '',
+  $enable_promisc_vrrp = false,
 ) {
     if ( ! defined(File['/etc/cobbler/preseed'])) {
         file { "/etc/cobbler/preseed":
